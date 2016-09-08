@@ -4,7 +4,7 @@
   "description": "Keymetrics API Wrapper",
   "main": "lib/keymetrics.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/Bucket.spec.js"
   },
   "repository": {
     "type": "git",
@@ -27,5 +27,10 @@
     "request": "^2.74.0",
     "socket.io-client": "^1.4.8",
     "superagent": "^2.2.0"
+  },
+  "devDependencies": {
+    "expect": "^1.20.2",
+    "mocha": "^3.0.2",
+    "should": "^11.1.0"
   }
 }
