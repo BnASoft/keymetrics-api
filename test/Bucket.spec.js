@@ -3,7 +3,10 @@
 var should     = require('should');
 var expect     = require('expect');
 
-var km = require('../lib/keymetrics')(process.env.TEST_TOKEN, process.env.TEST_ID);
+var km = require('../lib/keymetrics')({
+  access_token: process.env.TEST_TOKEN,
+  bucket_id: process.env.TEST_ID
+});
 var Bucket = require('../lib/Bucket');
 var bucket = km.bucket;
 
