@@ -24,8 +24,8 @@
   "homepage": "https://github.com/keymetrics/keymetrics-api#readme",
   "dependencies": {
     "eventemitter2": "^2.1.2",
+    "moment": "^2.15.0",
     "request": "^2.74.0",
-    "socket.io-client": "^1.4.8",
     "superagent": "^2.2.0"
   },
   "devDependencies": {
