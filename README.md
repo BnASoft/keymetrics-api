@@ -10,7 +10,7 @@ You will need to retrieve your Keymetrics user token to use it.
 var Keymetrics = require('./lib/keymetrics')
 
 var km = new Keymetrics({
-  token: "[refresh_token]"
+  token: "[token]"
 });
 
 km.init("[public_key]", function(err, lel) {
