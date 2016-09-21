@@ -2202,23 +2202,17 @@ Authenticate.prototype.btoa = function(str) {
   return new Buffer(str).toString('base64');
 };
 
-Authenticate.prototype.getToken = function(cb) {
-  return this.access_token;
-};
-
 Authenticate.prototype.refreshToken = function(cb) {
   var self = this;
 
-  if (typeof window === 'undefined')
-    var userAgent = process.release.name + '/' + process.version + ' (' + process.platform + ' ' + process.arch + ')';
-  else
-    var userAgent = 'node-superagent/2.2.0';
-
-  request
+  var post = request
     .post(OAUTH_URL + '/oauth/token')
-    .send('grant_type=refresh_token&client_id=' + OAUTH_CLIENT_ID +'&refresh_token=' + this.refresh_token +'&scope=all')
-    .set('User-Agent', userAgent)
-    // .set('Authorization', 'Basic ' + this.btoa(OAUTH_CLIENT_ID + ':' + OAUTH_CLIENT_SECRET))
+    .send('grant_type=refresh_token&client_id=' + OAUTH_CLIENT_ID +'&refresh_token=' + this.refresh_token +'&scope=all');
+
+  if (typeof window === 'undefined')
+    post.set('User-Agent', process.release.name + '/' + process.version + ' (' + process.platform + ' ' + process.arch + ')');
+
+  post
     .set("Content-Type", "application/x-www-form-urlencoded")
     .end(function(err, res) {
       if (err)
@@ -2229,6 +2223,7 @@ Authenticate.prototype.refreshToken = function(cb) {
 };
 
 module.exports = Authenticate;
+
 }).call(this,require('_process'),require("buffer").Buffer)
 },{"_process":5,"buffer":2,"superagent":14}],7:[function(require,module,exports){
 'use strict';
@@ -2419,10 +2414,6 @@ Realtime.prototype.testVerbose = function(first_argument) {
   return false;
 };
 
-Realtime.prototype.setToken =  function(token) {
-  this.token = token;
-};
-
 Realtime.prototype.socket_io_connect = function() {
   console.log('[%s] Realtime connected', moment().format());
 };
@@ -2495,8 +2486,6 @@ Realtime.prototype.init = function(cb) {
       });
 
       primus.on('data:incoming', function(data) {
-        if (typeof cb != 'undefined')
-          cb(data);
         Object.keys(data).forEach(function(event_key) {
 
           if (self.testVerbose())
@@ -2519,12 +2508,29 @@ Realtime.prototype.init = function(cb) {
         if (self.testVerbose()) console.log(event_name, data);
         eventemitter2.emit(event_name, data);
       });
+
+      if (typeof cb != 'undefined')
+        cb(null, bucket);
     });
 };
 
 Realtime.prototype.close = function() {
   if (this.primus)
     this.primus.destroy();
+};
+
+Realtime.prototype.unregister = function(cb) {
+  var self = this;
+
+  request
+    .post(this.url + 'bucket/' + this.bucket_id + '/setUnactive')
+    .send({})
+    .set('Authorization', 'Bearer ' + this.token)
+    .end(function(err, bucket) {
+      if (err) return cb(err);
+      self.close;
+      return cb(null, bucket)
+    });
 };
 
 module.exports = Realtime;
@@ -2559,11 +2565,10 @@ Keymetrics.prototype.init = function(public_key, callback) {
 
   if (typeof public_key === 'function')
     callback = public_key;
+
   this.checkToken(function(err, token) {
     if (token) {
-      self.realtime.token = token;
       self.bucket.getId(token, public_key, function(err, id) {
-        console.log(id);
         if (err) callback(err);
         self._bucket_id = id;
         self.realtime.bucket_id = id;
@@ -2573,6 +2578,9 @@ Keymetrics.prototype.init = function(public_key, callback) {
     else
       return callback(new Error("Failed to get access token"));
   });
+
+  //Check token every minute
+//  setInterval(this.checkToken(), 60000);
 }
 
 Keymetrics.prototype.setApiField = function(key, value) {
@@ -2591,15 +2599,19 @@ Keymetrics.prototype.getUrl = function() {
 Keymetrics.prototype.checkToken = function(cb) {
     var self = this;
 
-    if (!self._auth.getToken())
+    var changeAll = function(token) {
+      self.bucket.token = token;
+      self.realtime.token = token;
+      cb(null, token);
+    };
+
+    if (!self._auth.access_token)
       self._auth.refreshToken(function(err, token) {
         if (err) cb(err);
-        self.bucket.setToken(token);
-        self.realtime.setToken(token);
-        cb(null, token);
+        changeAll(token);
       });
-    //Check every minute the token validity
-    //setTimeout(self.checkToken, 60000);
+    else
+      changeAll(self._auth.access_token);
 };
 
 module.exports = Keymetrics;
