@@ -2388,19 +2388,22 @@ module.exports = Bucket;
 
 var request = require('superagent');
 var Primus = require('./primus.js');
-var EventEmitter2 = require('eventemitter2');
+var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var moment = require('moment');
 
-var eventemitter2 = new EventEmitter2({
-  wildcard: true,
-  delimiter: ':'
-});
-
-function Realtime(url) {
+function Realtime(url, eventemitter2) {
   this.url = url;
   this.token = null;
   this._bucket_id = null;
-  this._socket = null;
+  // this._socket = null;
+  // if (eventemitter2)
+  //   this.eventemitter2 = eventemitter2;
+  // else {
+    this.eventemitter2 = new EventEmitter2({
+      wildcard: true,
+      delimiter: ':'
+    });
+  // }
 };
 
 Realtime.prototype.testVerbose = function(first_argument) {
@@ -2421,7 +2424,7 @@ Realtime.prototype.socket_io_disconnect = function() {
   console.log('[%s] Realtime disconnected', moment().format());
 };
 
-Realtime.prototype.init = function(cb) {
+Realtime.prototype.init = function(cb, reccuring) {
   var self = this;
   
   request
@@ -2429,6 +2432,7 @@ Realtime.prototype.init = function(cb) {
     .send({})
     .set('Authorization', 'Bearer ' + this.token)
     .end(function(err, res) {
+      if (err) cb(err)
       var bucket = res.body;
 
       var web_url = bucket.node_cache.endpoints.web;
@@ -2485,13 +2489,16 @@ Realtime.prototype.init = function(cb) {
       });
 
       primus.on('data:incoming', function(data) {
+        if (typeof reccuring != 'undefined')
+          reccuring(data);
+
         Object.keys(data).forEach(function(event_key) {
 
           if (self.testVerbose())
             console.log(data.server_name + ':' + event_key, data[event_key]);
 
           setTimeout(function() {
-            eventemitter2.emit(data.server_name + ':' + event_key, data[event_key]);
+            self.eventemitter2.emit(data.server_name + ':' + event_key, data[event_key]);
           }, Math.floor((Math.random() * 4) + 1));
         });
       });
@@ -2499,16 +2506,16 @@ Realtime.prototype.init = function(cb) {
       primus.on('heapdump:ready', function(data) {
         var event_name = data.server_name + ':' + data.app_name + ':' + data.pm_id + ':' + 'heapdump:ready';
         if (self.testVerbose()) console.log(event_name, data);
-        eventemitter2.emit(event_name, data);
+        self.eventemitter2.emit(event_name, data);
       });
 
       primus.on('cpuprofile:ready', function(data) {
         var event_name = data.server_name + ':' + data.app_name + ':' + data.pm_id + ':' + 'cpuprofile:ready';
         if (self.testVerbose()) console.log(event_name, data);
-        eventemitter2.emit(event_name, data);
+        self.eventemitter2.emit(event_name, data);
       });
 
-      if (typeof cb != 'undefined')
+      if (typeof cb != 'undefined' && cb != null)
         return cb(null, bucket);
     });
 };
@@ -2556,7 +2563,7 @@ function Keymetrics(opts) {
   this._auth = new Authenticate(opts);
   this._bucket_id = opts.bucket || null;
   this.bucket = new Bucket(this.getUrl());
-  this.realtime = new Realtime(this.getUrl());
+  this.realtime = new Realtime(this.getUrl(), opts.eventemitter2);
 };
 
 Keymetrics.prototype.init = function(public_key, callback) {
