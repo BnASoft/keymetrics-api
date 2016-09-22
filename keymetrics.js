@@ -2400,7 +2400,6 @@ function Realtime(url) {
   this.url = url;
   this.token = null;
   this._bucket_id = null;
-  this.readyStatus = false;
   this._socket = null;
 };
 
@@ -2510,7 +2509,7 @@ Realtime.prototype.init = function(cb) {
       });
 
       if (typeof cb != 'undefined')
-        cb(null, bucket);
+        return cb(null, bucket);
     });
 };
 
@@ -2582,15 +2581,6 @@ Keymetrics.prototype.init = function(public_key, callback) {
   //Check token every minute
 //  setInterval(this.checkToken(), 60000);
 }
-
-Keymetrics.prototype.setApiField = function(key, value) {
-  this._api[key] = value;
-  this.bucket.api[key] = value;
-};
-
-Keymetrics.prototype.getApiField = function(key) {
-  return this._api[key];
-};
 
 Keymetrics.prototype.getUrl = function() {
   return this.api.host + ':' + this.api.port + this.api.basePath;
