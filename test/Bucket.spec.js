@@ -1,7 +1,6 @@
 'use strict';
 
 var should     = require('should');
-var expect     = require('expect');
 
 var km = require('../lib/keymetrics')({
   access_token: process.env.TEST_TOKEN,
@@ -34,5 +33,6 @@ describe('Bucket', function() {
         done();
       });
     });
+    
   });
 });
