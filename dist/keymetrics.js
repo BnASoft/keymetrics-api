@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.keymetrics = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Keymetrics = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (process,Buffer){
 'use strict';
 
@@ -10,7 +10,7 @@ var OAUTH_CLIENT_SECRET = '2393878333';
 
 function Authenticate(opts) {
   if (!(this instanceof Authenticate)) {
-    return new Keymetrics(opts);
+    return new Authenticate(opts);
   }
   var self = this;
 
@@ -46,346 +46,513 @@ Authenticate.prototype.refreshToken = function(cb) {
 module.exports = Authenticate;
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":13,"buffer":7,"superagent":14}],2:[function(require,module,exports){
+},{"_process":14,"buffer":8,"superagent":15}],2:[function(require,module,exports){
+'use strict';
+
+var request = require('superagent');
+var Data = require('./Bucket/Data.js');
+
+function Bucket(URL, eventemitter2, id) {
+  if (!(this instanceof Bucket)) {
+    return new Bucket(URL);
+  }
+
+  this._id = id || null;
+  this.current_raw = null;
+  this.baseURL = URL;
+  this.URL = URL + '/bucket';
+  this.eventemitter2 = eventemitter2;
+  this.token = null;
+  this.avalaible = [];
+
+  this.resetStateBucket();
+  this.ev_binded = false;
+  this.isReady(this.bindEvents());
+  this.Data = new Data(this.isReady, this.eventemitter2, this.baseURL);
+  if (id)
+    this.setURL(id);
+};
+
+Bucket.prototype = {
+  setToken: function(token) {
+    this.token = token;
+    this.Data.token = token;
+  },
+
+  setId: function(id) {
+    this._id = id;
+    this.URL += '/' + id;
+    this.Data.URL = this.URL;
+  },
+
+  isReady: function(cb) {
+    if (this.readyStatus == true && this.current_raw._id)
+      setTimeout(cb, 1);
+    else
+      this.eventemitter2.on('realtime:ready', function(data) {
+        return cb(data);
+      });
+  },
+
+  resetStateBucket: function() {
+    var self = this;
+
+    this.servers = {};
+    this.current_raw = null;
+    this.apps = {};
+
+    self = Object.assign(self, {
+      current_raw          : null,
+      current_subscription : {},
+      current_plan         : {},
+
+      servers              : {},
+      apps_server          : {},
+      apps                 : {},
+      exceptions           : {},
+
+      // Used as a limited size array for
+      // Displaying mini charts on widgets
+      mini_metrics         : {},
+
+      // For select box
+      selected_server_name : '',
+      selected_app_name    : '',
+      _server_list         : {}
+    });
+  },
+
+  bindEvents: function() {
+    var self = this;
+    if (this.ev_binded == true) return;
+    this.ev_binded = true;
+
+    this.eventemitter2.on('*:status', function(data) {
+      if (self.readyStatus == false) return;
+      //console.log(data.data.active);
+      //if (!data.data.active)
+      //data.data.active = true;
+      self.reformat(data);
+    });
+
+    this.eventemitter2.on('*:process:exception', function(data) {
+      if (self.readyStatus == false) return;
+      if (self.exceptions_summary == null) return;
+
+      data.forEach(function(excpt) {
+        if (!self.exceptions_summary[excpt.process.server])
+          self.exceptions_summary[excpt.process.server] = {};
+        if (!self.exceptions_summary[excpt.process.server][excpt.process.name])
+          self.exceptions_summary[excpt.process.server][excpt.process.name] = 0;
+        self.exceptions_summary[excpt.process.server][excpt.process.name]++;
+      });
+    });
+  },
+
+  reformat: function(status) {
+      var self = this;
+      // Populate Bucket.servers
+      self.servers[status.server_name] = status;
+
+      if (!self._server_list[status.server_name])
+        // Mainly used for select box on navbar
+        self._server_list[status.server_name] = {
+          server_name : status.server_name
+        };
+
+      var k1 = Object.keys(this.apps);
+      var l1 = k1.length;
+      for (var i = 0; i < l1; i++) {
+        self.apps[k1[i]].organization[status.server_name] = {};
+      }
+
+      /*********************
+       * Aggregate application by name using all servers
+       *********************/
+      status.data.process.forEach(function(proc) {
+        /**
+         * If the server is not active don't take the app into account
+         */
+        //if (!status.data.active) return false;
+
+        if (!self.apps[proc.name])
+          self.apps[proc.name] = {
+            name : proc.name,
+            organization : {}
+          };
+
+        // if (!self.apps_flat_list[status.server_name + ':' + proc.name]) {
+        //   self.apps_flat_list[status.server_name + ':' + proc.name] = {
+        //     name : proc.name,
+        //     server : status.server_name,
+        //     raw : {}
+        //   };
+        // }
+
+
+        if (!self.apps[proc.name].organization[status.server_name])
+          self.apps[proc.name].organization[status.server_name] = {};
+
+        if (!self.apps[proc.name].organization[status.server_name][proc.pm_id])
+          self.apps[proc.name].organization[status.server_name][proc.pm_id] = {};
+
+        return self.apps[proc.name].organization[status.server_name][proc.pm_id].status = proc;
+      });
+
+      /*********************
+       * Aggregate application by name using only one server
+       *********************/
+      if (!self.apps_server)
+        self.apps_server = {};
+
+      if (!self.apps_server[status.server_name])
+        self.apps_server[status.server_name] = {};
+
+      self.apps_server[status.server_name] = {};
+
+      status.data.process.forEach(function(proc) {
+        if (self.apps_server[status.server_name][proc.name]) {
+          self.apps_server[status.server_name][proc.name].process_count++;
+          self.apps_server[status.server_name][proc.name].memory += proc.memory;
+          self.apps_server[status.server_name][proc.name].raw[proc.pm_id] = angular.copy(proc);
+          return false;
+        }
+
+        self.apps_server[status.server_name][proc.name] = angular.copy(proc);
+        self.apps_server[status.server_name][proc.name].process_count = 1;
+        self.apps_server[status.server_name][proc.name].raw = {};
+        self.apps_server[status.server_name][proc.name].raw[proc.pm_id] = angular.copy(proc);
+
+        return false;
+      });
+
+
+      Object.keys(self.apps_server[status.server_name]).forEach(function(proc_key) {
+        var proc = self.apps_server[status.server_name][proc_key];
+
+        if (!self.mini_metrics[status.server_name])
+          self.mini_metrics[status.server_name] = {};
+
+        if (!self.mini_metrics[status.server_name][proc.name])
+          self.mini_metrics[status.server_name][proc.name] = {
+            cpu : FixedQueue(60),
+            mem : FixedQueue(60)
+          };
+
+        self.mini_metrics[status.server_name][proc.name].cpu.push(proc.cpu);
+        self.mini_metrics[status.server_name][proc.name].mem.push(Math.round(proc.memory / (1024 * 1024)));
+      });
+
+
+      /**
+       * Delete removed processes
+       */
+      Object.keys(self.apps).forEach(function(key) {
+        if (Object.keys(self.apps[key].organization[status.server_name]).length == 0) {
+          delete self.apps[key].organization[status.server_name];
+        }
+      });
+    },
+
+
+  activeServers: function() {
+    var active_servers = {};
+
+    Object.keys(this.servers).forEach(function(server_key) {
+      if (this.servers[server_key].data &&
+          this.servers[server_key].data.active) {
+        active_servers[server_key] = this.servers[server_key];
+      }
+    });
+    return active_servers;
+  },
+
+  activeProcesses: function() {
+    var active_servers = this.activeServers();
+    var active_processes = [];
+
+    Object.keys(active_servers).forEach(function(server_key) {
+      active_processes = active_processes.concat(active_servers[server_key].data.processes);
+    });
+
+    return active_processes;
+  },
+
+  getAppObjectFromAppName: function(app_name) {
+    var servers = Object.keys(this.apps_server);
+    var app     = null;
+
+    for (var i = 0; i < servers.length ; i++) {
+      app = this.apps_server[servers[i]][app_name];
+
+      if (app) break;
+    }
+
+    return app;
+  },
+
+  getId: function(token, public_id, cb) {
+    var self = this;
+    this.token = token;
+
+    request
+      .get(this.URL)
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        if (err)
+          return cb(err);
+        for (var i = 0; i < res.body.length; i++) {
+          if (res.body[i].public_id === public_id) {
+            self.current_raw = res.body[i];
+            self.setId(res.body[i]._id);
+            return cb(null, self._id);
+          }
+        };
+        return cb(new Error("Failed to find bucket"), null);
+      });
+  },
+
+  setToken: function(token) {
+    this.token = token;
+  },
+
+  init: function(cb) {
+    this.all(function(err, buckets) {
+      if (err) throw new Error(err);
+      Bucket.available = buckets;
+      if (cb) return cb(null, buckets);
+    });
+  },
+
+  all: function(cb) {
+    request
+      .get(this.baseURL + '/bucket')
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  },
+
+  fetchUserRole: function(cb) {
+    var URL = this.URL + '/current_role';
+
+    request
+      .get(URL)
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        if (err)
+          return cb(err);
+        return cb(null, res.text);
+      });
+  },
+
+  get: function(cb) {
+    var self = this;
+    var URL = this.URL;
+
+    request
+      .get(URL)
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        if (err)
+          return cb(err);
+        self.current_raw = res.body;
+        return cb(null, res.body);
+      });
+  },
+
+  getPlans: function(cb) {
+    if (typeof window != 'undefined' && window.WIDGET_MODE === true)
+        return cb(null, {});
+    request
+      .get(this.baseURL + '/misc/plans')
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  },
+
+  getCurrentPlan: function() {
+    if (!this.current_raw || !this.current_raw.credits) return null;
+
+    return this.current_raw.credits.offer_type;
+  },
+
+  getProbesHistory: function(opts, cb) {
+      var URL = this.URL + '/data/probes/histogram';
+
+      if (opts.app_name) URL += '?app_name=' + opts.app_name;
+      if (opts.server_name) URL += '&server_name=' + opts.server_name;
+      if (opts.minutes) URL += '&minutes=' + opts.minutes;
+      if (opts.interval) URL += '&interval=' + opts.interval;
+
+      request
+        .get(URL)
+        .set('Authorization', 'Bearer ' + this.token)
+        .end(function(err, res) {
+          cb(err, res.body);
+        });
+    },
+
+  getProbesMeta: function(opts, cb) {
+    var URL = this.URL + '/data/probes?app_name=' + opts.app_name;
+
+    if (opts.minutes) URL += '&minutes=' + opts.minutes;
+    if (opts.server_name) URL += '&server_name=' + opts.server_name;
+
+    request
+      .get(URL)
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+
+  },
+
+  getMetaServers: function(cb) {
+    var self = this;
+
+    this.isReady(function() {
+    var URL = self.URL + '/meta_servers';
+
+    request
+      .get(URL)
+      .set('Authorization', 'Bearer ' + self.token)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+    });
+  },
+
+  saveMetaServer: function(server, cb) {
+    var URL = this.URL + '/server/update';
+
+    request
+      .post(URL, server)
+      .send(server)
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        if (err)
+          return cb(err);
+        return cb(null, res.body);
+      });
+  },
+
+  update: function(data, cb) {
+    var URL = this.URL;
+
+    request
+      .put(URL)
+      .send(data)
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        if (err)
+          return cb(err);
+        return cb(null, res.body);
+      });
+  }
+};
+
+Bucket.prototype.set = function(bucket) {
+  var self = this;
+
+  this.resetStateBucket();
+  this.current_raw = bucket;
+  this.current_name = bucket.name;
+  this.readyStatus = true;
+
+  this.getPlans(function(err, plans) {
+    self.current_plan = plans[self.current_raw.credits.offer_type];
+  });
+};
+
+Bucket.prototype.unset = function() {
+  this.resetStateBucket();
+  this.current_raw = null;
+  this.current_name = '';
+  this.current_plan = {};
+  this.readyStatus = false;
+};
+
+module.exports = Bucket;
+},{"./Bucket/Data.js":3,"superagent":15}],3:[function(require,module,exports){
 'use strict';
 
 var request = require('superagent');
 
-function Bucket(URL) {
-  if (!(this instanceof Bucket)) {
-    return new Bucket(opts);
-  }
-
+function Data(isReady, eventemitter2, baseURL) {
   this._id = null;
-  this.current_raw = null;
-  this.URL = URL + 'bucket/';
+  this.baseURL = baseURL;
+  this.URL = null;
+  this.eventemitter2 = eventemitter2;
   this.token = null;
-  this.readyStatus = false;
-  this.ev_binded = false;
+  this.isReady = isReady;
 };
 
-Bucket.prototype.resetStateBucket = function() {
-  var self = this;
-  this.servers = {};
-  this.current_raw = null;
-  this.apps = {};
-
-  self = Object.assign(self, {
-    current_raw          : null,
-    current_subscription : {},
-    current_plan         : {},
-
-    servers              : {},
-    apps_server          : {},
-    apps                 : {},
-    exceptions           : {},
-
-    // Used as a limited size array for
-    // Displaying mini charts on widgets
-    mini_metrics         : {},
-
-    // For select box
-    selected_server_name : '',
-    selected_app_name    : '',
-    _server_list         : {}
-  });
-};
-
-  // isReady(cb) {
-  //   if (readyStatus == true && Bucket.current_raw._id)
-  //     setTimeout(cb, 1);
-  //   else
-  //     //Use event emitter?
-  //     $rootScope.$on('ready', cb);
-  // },
-
-Bucket.prototype.initSignals = function() {
-  if (ev_binded == true) return;
-  ev_binded = true;
-
-  keymetrics.realtime.eventemitter2.on('*:status', function(data) {
-    if (readyStatus == false) return;
-    //console.log(data.data.active);
-    //if (!data.data.active)
-    //data.data.active = true;
-    Bucket.reformat(data);
-  });
-
-  keymetrics.realtime.eventemitter2.on('*:process:exception', function(data) {
-    if (readyStatus == false) return;
-    if (Bucket.exceptions_summary == null) return;
-
-    data.forEach(function(excpt) {
-      if (!Bucket.exceptions_summary[excpt.process.server])
-        Bucket.exceptions_summary[excpt.process.server] = {};
-      if (!Bucket.exceptions_summary[excpt.process.server][excpt.process.name])
-        Bucket.exceptions_summary[excpt.process.server][excpt.process.name] = 0;
-      Bucket.exceptions_summary[excpt.process.server][excpt.process.name]++;
-    });
-  });
-};
-
-Bucket.prototype.init = function(cb) {
-  Bucket.all(function(err, buckets) {
-    if (err) throw new Error(err);
-    Bucket.available = buckets;
-    if (cb) return cb(null, buckets);
-  });
-};
-
-Bucket.prototype.all = function(cb) {
-  var self = this;
-  this.token = token;
-
-  request
-    .get(this.URL)
+Data.prototype = {
+  pm2Version : function(cb) {
+    request
+    .get(this.baseURL + '/misc/pm2_version')
     .set('Authorization', 'Bearer ' + this.token)
     .end(function(err, res) {
-    if (err)
-      return cb(err);
-    return cb(null, items);
-  });
-};
+      return cb(err, res.body);
+    });
+  },
 
-Bucket.prototype.serverIsShowable = function(server_name) {
-  if (this.selected_server_name) {
-    if (this.selected_server_name == server_name)
-      return true;
-    else
-      return false;
-  }
-  else
-    return true;
-};
+  status: function(cb) {
+    var self = this;
 
-Bucket.prototype.appOptionIsEnabled = function(app_name, option) {
-  var ret = false;
-  var self = this;
-
-  Object
-    .keys(Bucket.apps[app_name].organization)
-    .forEach(function(server) {
-      var app = self.apps[app_name].organization[server];
-
-      Object.keys(app).forEach(function(sub_app_key) {
-        var sub_app = app[sub_app_key];
-
-        if (sub_app.status.axm_options[option])
-          ret = true;
+    self.isReady(function() {
+      request
+        .get(self.URL + '/data/status')
+        .set('Authorization', 'Bearer ' + self.token)
+        .end(function(err, res) {
+          return cb(err, res.body);
+        });
       });
-    });
-  return ret;
-};
+  },
 
-Bucket.prototype.appIsShowable = function(app_name) {
-  if (Bucket.selected_app_name) {
-    if (Bucket.selected_app_name == app_name)
-      return true;
-    else
-      return false;
+  getTransactionAVG: function(cb) {
+    var self = this;
+
+    this.isReady(function() {
+      request
+        .get(self.URL + '/data/transactions/average')
+        .set('Authorization', 'Bearer ' + self.token)
+        .end(function(err, res) {
+          return cb(err, res.body)
+        });
+    });
+  },
+
+  exceptionsSummary: function(cb) {
+    var self = this;
+    
+    this.isReady(function() {
+      request
+        .get(self.URL + '/data/exceptions/summary')
+        .set('Authorization', 'Bearer ' + self.token)
+        .end(function(err, res) {
+          return cb(err, res.body);
+        });
+    });
   }
-  else
-    return true;
 };
 
-Bucket.prototype.isServerActive = function(server_name) {
-  if (Bucket.servers[server_name] && Bucket.servers[server_name].data.active)
-    return true;
-  return false;
-};
-
-Bucket.prototype.findServerByName = function(name) {
-  var ret_server;
-  var self = this;
-
-  Object.keys(Bucket.servers).forEach(function(server_key) {
-    if (self.servers[server_key].server_name == name)
-      ret_server = self.servers[server_key];
-  });
-
-  return ret_server;
-};
-
-Bucket.prototype.findMemoryForServer = function(name) {
-  var server = this.findServerByName(name);
-
-  return server.data.server.total_mem;
-};
-
-Bucket.prototype.dumpModuleToConsole = function(app_name) {
-  var k = Object.keys(Bucket.apps[app_name].organization)[0];
-  var j = Object.keys(Bucket.apps[app_name].organization[k]);
-  console.log(JSON.stringify(this.apps[app_name].organization[k][j].status));
-};
-
-Bucket.prototype.findByName = function(name) {
-  var buck;
-
-  this.available.forEach(function(bucket) {
-    if (bucket.name == name) {
-      buck = bucket;
-    }
-  });
-  return buck;
-};
-
-
-Bucket.prototype.getId= function(token, public_id, cb) {
-  var self = this;
-  this.token = token;
-
-  request
-    .get(this.URL)
-    .set('Authorization', 'Bearer ' + this.token)
-    .end(function(err, res) {
-      if (err)
-        return cb(err);
-      for (var i = 0; i < res.body.length; i++) {
-        if (res.body[i].public_id === public_id) {
-          self.current_raw = res.body[i];
-          self._id = res.body[i]._id;
-          self.URL = self.URL + self._id;
-          return cb(null, self._id);
-        }
-      };
-      return cb(new Error("Failed to find bucket"), null);
-    });
-};
-
-Bucket.prototype.fetchUserRole= function(cb) {
-  var URL = this.URL + '/current_role';
-
-  request
-    .get(URL)
-    .set('Authorization', 'Bearer ' + this.token)
-    .end(function(err, res) {
-      if (err)
-        return cb(err);
-      return cb(null, res.text);
-    });
-};
-
-Bucket.prototype.get= function(cb) {
-  var self = this;
-  var URL = this.URL;
-
-  request
-    .get(URL)
-    .set('Authorization', 'Bearer ' + this.token)
-    .end(function(err, res) {
-      if (err)
-        return cb(err);
-      self.current_raw = res.body;
-      return cb(null, res.body);
-    });
-};
-
-Bucket.prototype.getCurrentPlan= function() {
-  if (!this.current_raw || !this.current_raw.credits) return null;
-
-  return this.current_raw.credits.offer_type;
-};
-
-Bucket.prototype.getProbesHistory= function(opts, cb) {
-  var URL = this.URL + '/data/probes/histogram';
-
-  if (opts.app_name) URL += '?app_name=' + opts.app_name;
-  if (opts.server_name) URL += '&server_name=' + opts.server_name;
-  if (opts.minutes) URL += '&minutes=' + opts.minutes;
-  if (opts.interval) URL += '&interval=' + opts.interval;
-
-  request
-    .get(URL)
-    .set('Authorization', 'Bearer ' + this.token)
-    .end(function(err, res) {
-      if (err)
-        return cb(err);
-      return cb(null, res.body);
-    });
-};
-
-Bucket.prototype.getProbesMeta= function(opts, cb) {
-  var URL = this.URL + '/data/probes?app_name=' + opts.app_name;
-
-  if (opts.minutes) URL += '&minutes=' + opts.minutes;
-  if (opts.server_name) URL += '&server_name=' + opts.server_name;
-
-  request
-    .get(URL)
-    .set('Authorization', 'Bearer ' + this.token)
-    .end(function(err, res) {
-      if (err)
-        return cb(err);
-      return cb(null, res.body);
-    });
-
-};
-
-Bucket.prototype.getMetaServers= function(cb) {
-  var URL = this.URL + '/meta_servers';
-
-  request
-    .get(URL)
-    .set('Authorization', 'Bearer ' + this.token)
-    .end(function(err, res) {
-      if (err)
-        return cb(err);
-      return cb(null, res.body);
-    });
-};
-
-Bucket.prototype.saveMetaServer= function(server, cb) {
-  var URL = this.URL + '/server/update';
-
-  request
-    .post(URL, server)
-    .send(server)
-    .set('Authorization', 'Bearer ' + this.token)
-    .end(function(err, res) {
-      if (err)
-        return cb(err);
-      return cb(null, res.body);
-    });
-  };
-
-Bucket.prototype.update= function(data, cb) {
-  var URL = this.URL;
-
-  request
-    .put(URL)
-    .send(data)
-    .set('Authorization', 'Bearer ' + this.token)
-    .end(function(err, res) {
-      if (err)
-        return cb(err);
-      return cb(null, res.body);
-    });
-};
-
-module.exports = Bucket;
-
-},{"superagent":14}],3:[function(require,module,exports){
+module.exports = Data;
+},{"superagent":15}],4:[function(require,module,exports){
 (function (process){
 'use strict';
 
 var request = require('superagent');
 var Primus = require('./primus.js');
-var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var moment = require('moment');
 
 function Realtime(url, eventemitter2) {
   this.url = url;
   this.token = null;
   this._bucket_id = null;
-  // this._socket = null;
-  // if (eventemitter2)
-  //   this.eventemitter2 = eventemitter2;
-  // else {
-    this.eventemitter2 = new EventEmitter2({
-      wildcard: true,
-      delimiter: ':'
-    });
-  // }
+  this.eventemitter2 = eventemitter2;
 };
 
 Realtime.prototype.testVerbose = function(first_argument) {
@@ -398,19 +565,11 @@ Realtime.prototype.testVerbose = function(first_argument) {
   return false;
 };
 
-Realtime.prototype.socket_io_connect = function() {
-  console.log('[%s] Realtime connected', moment().format());
-};
-
-Realtime.prototype.socket_io_disconnect = function() {
-  console.log('[%s] Realtime disconnected', moment().format());
-};
-
 Realtime.prototype.init = function(cb, reccuring) {
   var self = this;
-  
+
   request
-    .post(this.url + 'bucket/' + this.bucket_id + '/setActive')
+    .post(this.url + '/bucket/' + this.bucket_id + '/setActive')
     .send({})
     .set('Authorization', 'Bearer ' + this.token)
     .end(function(err, res) {
@@ -422,7 +581,7 @@ Realtime.prototype.init = function(cb, reccuring) {
 
       /***********************************
        * Development url overidde
-       * test if on client or NodeJs 
+       * test if on client or NodeJs
        ***********************************/
 
       if (typeof window != 'undefined') {
@@ -454,20 +613,29 @@ Realtime.prototype.init = function(cb, reccuring) {
         url.query = 'token=' + self.token;
       });
 
-      primus.on('open', self.socket_io_connect);
+      primus.on('open', function() {
+        console.log('[%s] Realtime connected', moment().format());
+        self.eventemitter2.emit('realtime:on');
+      });
 
-      primus.on('close', self.socket_io_disconnect);
+      primus.on('close', function() {
+        console.log('[%s] Realtime disconnected', moment().format());
+        self.eventemitter2.emit('realtime:off');
+      });
 
       primus.on('reconnect', function() {
         console.log('[%s] Realtime re-connection', moment().format());
+        self.eventemitter2.emit('realtime:reconnect');
       });
 
       primus.on('reconnect timeout', function() {
         console.log('Websocket reconnect timeout');
+        self.eventemitter2.emit('realtime:reconnect-timeout');
       });
 
       primus.on('connection:success', function(myself) {
         console.log('Websocket user authenticated');
+        self.eventemitter2.emit('realtime:auth');
       });
 
       primus.on('data:incoming', function(data) {
@@ -511,7 +679,7 @@ Realtime.prototype.unregister = function(cb) {
   var self = this;
 
   request
-    .post(this.url + 'bucket/' + this.bucket_id + '/setUnactive')
+    .post(this.url + '/bucket/' + this.bucket_id + '/setUnactive')
     .send({})
     .set('Authorization', 'Bearer ' + this.token)
     .end(function(err, bucket) {
@@ -522,30 +690,45 @@ Realtime.prototype.unregister = function(cb) {
 };
 
 module.exports = Realtime;
+
 }).call(this,require('_process'))
-},{"./primus.js":5,"_process":13,"eventemitter2":9,"moment":12,"superagent":14}],4:[function(require,module,exports){
+},{"./primus.js":6,"_process":14,"moment":13,"superagent":15}],5:[function(require,module,exports){
 'use strict';
 
 var request = require('superagent');
 var Bucket  = require('./Bucket.js');
 var Authenticate = require('./Authenticate');
+var EventEmitter2 = require('eventemitter2');
 var Realtime = require('./Realtime');
 
 function Keymetrics(opts) {
   if (!(this instanceof Keymetrics)) {
     return new Keymetrics(opts);
   }
+  opts = opts || {};
 
   this.api = {
     host : opts.host ||  'http://app.km.io',
     port : opts.port || '3000',
-    basePath : opts.path || '/api/'
+    basePath : opts.path || '/api'
   };
+
+  if (opts.eventemitter2)
+    this.eventemitter2 = opts.eventemitter2;
+  else
+    this.eventemitter2 = new EventEmitter2({
+      wildcard: true,
+      delimiter: ':'
+    });
 
   this._auth = new Authenticate(opts);
   this._bucket_id = opts.bucket || null;
-  this.bucket = new Bucket(this.getUrl());
-  this.realtime = new Realtime(this.getUrl(), opts.eventemitter2);
+  this.bucket = new Bucket(this.getUrl(), this.eventemitter2, opts.id);
+  this.realtime = new Realtime(this.getUrl(), this.eventemitter2);
+  if (opts.access_token) {
+    this.bucket.setToken(opts.access_token);
+    this.realtime.token = opts.access_token;
+  }
 };
 
 Keymetrics.prototype.init = function(public_key, callback) {
@@ -561,12 +744,12 @@ Keymetrics.prototype.init = function(public_key, callback) {
           if (err) callback(err);
           self._bucket_id = id;
           self.realtime.bucket_id = id;
-          return callback(null, self.bucket.current_raw);
-      });
+          return callback(null, self.bucket.current_raw._id);
+        });
       else {
+        self.realtime.bucket_id = self._bucket_id;
         self.bucket.setId(self._bucket_id);
-        self.realtime.bucket_id = id;
-        return callback(null, id);
+        return callbacK(null, self.bucket_id);
       }
     }
     else
@@ -575,33 +758,33 @@ Keymetrics.prototype.init = function(public_key, callback) {
 
   //Check token every minute
 //  setInterval(this.checkToken(), 60000);
-};
+}
 
 Keymetrics.prototype.getUrl = function() {
   return this.api.host + ':' + this.api.port + this.api.basePath;
 };
 
 Keymetrics.prototype.checkToken = function(cb) {
-    var self = this;
+  var self = this;
 
-    var changeAll = function(token) {
-      self.bucket.token = token;
-      self.realtime.token = token;
-      cb(null, token);
-    };
+  var changeAll = function(token) {
+    self.bucket.setToken(token);
+    self.realtime.token = token;
+    cb(null, token);
+  };
 
-    if (!self._auth.access_token)
-      self._auth.refreshToken(function(err, token) {
-        if (err) cb(err);
-        changeAll(token);
-      });
-    else
+  if (!self._auth.access_token)
+    self._auth.refreshToken(function(err, token) {
+      if (err) cb(err);
+      changeAll(token);
+    });
+  else
       changeAll(self._auth.access_token);
 };
 
 module.exports = Keymetrics;
 
-},{"./Authenticate":1,"./Bucket.js":2,"./Realtime":3,"superagent":14}],5:[function(require,module,exports){
+},{"./Authenticate":1,"./Bucket.js":2,"./Realtime":4,"eventemitter2":10,"superagent":15}],6:[function(require,module,exports){
 (function (global){
 (function UMDish(name, context, definition) {
   context[name] = definition.call(context);
@@ -3715,7 +3898,7 @@ function emitter() {
 })(this["Primus"]);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -3831,7 +4014,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -5624,7 +5807,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":6,"ieee754":10,"isarray":11}],8:[function(require,module,exports){
+},{"base64-js":7,"ieee754":11,"isarray":12}],9:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -5787,7 +5970,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*!
  * EventEmitter2
  * https://github.com/hij1nx/EventEmitter2
@@ -6514,7 +6697,7 @@ Emitter.prototype.hasListeners = function(event){
   }
 }();
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -6600,14 +6783,14 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 //! moment.js
 //! version : 2.15.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -10842,7 +11025,7 @@ module.exports = Array.isArray || function (arr) {
     return _moment;
 
 }));
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -11024,7 +11207,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Root reference for iframes.
  */
@@ -12002,7 +12185,7 @@ request.put = function(url, data, fn){
   return req;
 };
 
-},{"./is-object":15,"./request":17,"./request-base":16,"emitter":8}],15:[function(require,module,exports){
+},{"./is-object":16,"./request":18,"./request-base":17,"emitter":9}],16:[function(require,module,exports){
 /**
  * Check if `obj` is an object.
  *
@@ -12017,7 +12200,7 @@ function isObject(obj) {
 
 module.exports = isObject;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * Module of mixed-in functions shared between node and client code
  */
@@ -12366,7 +12549,7 @@ exports.send = function(data){
   return this;
 };
 
-},{"./is-object":15}],17:[function(require,module,exports){
+},{"./is-object":16}],18:[function(require,module,exports){
 // The node and browser modules expose versions of this with the
 // appropriate constructor function bound as first argument
 /**
@@ -12400,5 +12583,5 @@ function request(RequestConstructor, method, url) {
 
 module.exports = request;
 
-},{}]},{},[4])(4)
+},{}]},{},[5])(5)
 });
