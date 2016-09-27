@@ -68,7 +68,7 @@ function Bucket(URL, eventemitter2, id) {
   this.resetStateBucket();
   this.ev_binded = false;
   this.isReady(this.bindEvents());
-  this.Data = new Data(this.isReady, this.eventemitter2, this.baseURL);
+  this.Data = new Data(this.baseURL);
   if (id)
     this.setURL(id);
 };
@@ -160,7 +160,7 @@ Bucket.prototype = {
           server_name : status.server_name
         };
 
-      var k1 = Object.keys(this.apps);
+      var k1 = Object.keys(self.apps);
       var l1 = k1.length;
       for (var i = 0; i < l1; i++) {
         self.apps[k1[i]].organization[status.server_name] = {};
@@ -304,22 +304,18 @@ Bucket.prototype = {
         for (var i = 0; i < res.body.length; i++) {
           if (res.body[i].public_id === public_id) {
             self.current_raw = res.body[i];
-            self.setId(res.body[i]._id);
-            return cb(null, self._id);
+            return cb(null, self.current_raw._id);
           }
         };
         return cb(new Error("Failed to find bucket"), null);
       });
   },
 
-  setToken: function(token) {
-    this.token = token;
-  },
-
   init: function(cb) {
+    var self = this;
     this.all(function(err, buckets) {
       if (err) throw new Error(err);
-      Bucket.available = buckets;
+      self.available = buckets;
       if (cb) return cb(null, buckets);
     });
   },
@@ -480,16 +476,16 @@ module.exports = Bucket;
 
 var request = require('superagent');
 
-function Data(isReady, eventemitter2, baseURL) {
-  this._id = null;
+function Data(baseURL) {
   this.baseURL = baseURL;
   this.URL = null;
-  this.eventemitter2 = eventemitter2;
-  this.token = null;
-  this.isReady = isReady;
 };
 
 Data.prototype = {
+  setToken: function(token) {
+    this.token = token;
+  },
+
   pm2Version : function(cb) {
     request
     .get(this.baseURL + '/misc/pm2_version')
@@ -500,42 +496,30 @@ Data.prototype = {
   },
 
   status: function(cb) {
-    var self = this;
-
-    self.isReady(function() {
-      request
-        .get(self.URL + '/data/status')
-        .set('Authorization', 'Bearer ' + self.token)
-        .end(function(err, res) {
-          return cb(err, res.body);
-        });
+    request
+      .get(this.URL + '/data/status')
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        return cb(err, res.body);
       });
   },
 
   getTransactionAVG: function(cb) {
-    var self = this;
-
-    this.isReady(function() {
-      request
-        .get(self.URL + '/data/transactions/average')
-        .set('Authorization', 'Bearer ' + self.token)
-        .end(function(err, res) {
-          return cb(err, res.body)
-        });
-    });
+    request
+      .get(this.URL + '/data/transactions/average')
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        return cb(err, res.body)
+      });
   },
 
   exceptionsSummary: function(cb) {
-    var self = this;
-    
-    this.isReady(function() {
-      request
-        .get(self.URL + '/data/exceptions/summary')
-        .set('Authorization', 'Bearer ' + self.token)
-        .end(function(err, res) {
-          return cb(err, res.body);
-        });
-    });
+    request
+      .get(this.URL + '/data/exceptions/summary')
+      .set('Authorization', 'Bearer ' + this.token)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
   }
 };
 
@@ -551,7 +535,7 @@ var moment = require('moment');
 function Realtime(url, eventemitter2) {
   this.url = url;
   this.token = null;
-  this._bucket_id = null;
+  this.bucket_id = null;
   this.eventemitter2 = eventemitter2;
 };
 
@@ -564,6 +548,10 @@ Realtime.prototype.testVerbose = function(first_argument) {
     return true;
   return false;
 };
+
+Realtime.prototype.setId = function(id) {
+  this.bucket_id = id;
+}
 
 Realtime.prototype.init = function(cb, reccuring) {
   var self = this;
@@ -695,7 +683,6 @@ module.exports = Realtime;
 },{"./primus.js":6,"_process":14,"moment":13,"superagent":15}],5:[function(require,module,exports){
 'use strict';
 
-var request = require('superagent');
 var Bucket  = require('./Bucket.js');
 var Authenticate = require('./Authenticate');
 var EventEmitter2 = require('eventemitter2');
@@ -742,14 +729,12 @@ Keymetrics.prototype.init = function(public_key, callback) {
       if (!self._bucket_id)
         self.bucket.getId(token, public_key, function(err, id) {
           if (err) callback(err);
-          self._bucket_id = id;
-          self.realtime.bucket_id = id;
-          return callback(null, self.bucket.current_raw._id);
+          self.setId(id);
+          return callback(null, self.bucket.current_raw);
         });
       else {
-        self.realtime.bucket_id = self._bucket_id;
-        self.bucket.setId(self._bucket_id);
-        return callbacK(null, self.bucket_id);
+        self.setId(self._bucket_id);
+        return callbacK(null, self.bucket.current_raw);
       }
     }
     else
@@ -762,6 +747,12 @@ Keymetrics.prototype.init = function(public_key, callback) {
 
 Keymetrics.prototype.getUrl = function() {
   return this.api.host + ':' + this.api.port + this.api.basePath;
+};
+
+Keymetrics.prototype.setId = function(id) {
+  this._bucket_id = id;
+  this.realtime.setId(id);
+  this.bucket.setId(id);
 };
 
 Keymetrics.prototype.checkToken = function(cb) {
@@ -784,7 +775,7 @@ Keymetrics.prototype.checkToken = function(cb) {
 
 module.exports = Keymetrics;
 
-},{"./Authenticate":1,"./Bucket.js":2,"./Realtime":4,"eventemitter2":10,"superagent":15}],6:[function(require,module,exports){
+},{"./Authenticate":1,"./Bucket.js":2,"./Realtime":4,"eventemitter2":10}],6:[function(require,module,exports){
 (function (global){
 (function UMDish(name, context, definition) {
   context[name] = definition.call(context);
