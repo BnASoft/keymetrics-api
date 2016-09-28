@@ -53,6 +53,7 @@ var request = require('superagent');
 var Data = require('./Bucket/Data.js');
 
 function Bucket(URL, eventemitter2, id) {
+  var self = this;
   if (!(this instanceof Bucket)) {
     return new Bucket(URL);
   }
@@ -69,22 +70,20 @@ function Bucket(URL, eventemitter2, id) {
   this.ev_binded = false;
   this.isReady(this.bindEvents());
   this.Data = new Data(this.baseURL);
-  if (id)
-    this.setURL(id);
+
+  this.eventemitter2.on('current:id', function(id) {
+    self._id = id;
+    self.URL = self.baseURL + '/bucket/' + id;
+    self.Data.URL = self.URL;
+  });
+
+  this.eventemitter2.on('current:token', function(token) {
+    self.token = token;
+    self.Data.token = token;
+  })
 };
 
 Bucket.prototype = {
-  setToken: function(token) {
-    this.token = token;
-    this.Data.token = token;
-  },
-
-  setId: function(id) {
-    this._id = id;
-    this.URL += '/' + id;
-    this.Data.URL = this.URL;
-  },
-
   isReady: function(cb) {
     if (this.readyStatus == true && this.current_raw._id)
       setTimeout(cb, 1);
@@ -291,9 +290,9 @@ Bucket.prototype = {
     return app;
   },
 
-  getId: function(token, public_id, cb) {
+  getId: function(public_id, cb) {
     var self = this;
-    this.token = token;
+    console.log(this.URL);
 
     request
       .get(this.URL)
@@ -533,10 +532,20 @@ var Primus = require('./primus.js');
 var moment = require('moment');
 
 function Realtime(url, eventemitter2) {
+  var self = this;
+
   this.url = url;
   this.token = null;
   this.bucket_id = null;
   this.eventemitter2 = eventemitter2;
+
+  this.eventemitter2.on('current:id', function(id) {
+    self.bucket_id = id;
+  });
+  
+  this.eventemitter2.on('current:token', function(token) {
+    self.token = token;
+  })
 };
 
 Realtime.prototype.testVerbose = function(first_argument) {
@@ -548,10 +557,6 @@ Realtime.prototype.testVerbose = function(first_argument) {
     return true;
   return false;
 };
-
-Realtime.prototype.setId = function(id) {
-  this.bucket_id = id;
-}
 
 Realtime.prototype.init = function(cb, reccuring) {
   var self = this;
@@ -689,6 +694,8 @@ var EventEmitter2 = require('eventemitter2');
 var Realtime = require('./Realtime');
 
 function Keymetrics(opts) {
+  var self = this;
+
   if (!(this instanceof Keymetrics)) {
     return new Keymetrics(opts);
   }
@@ -709,32 +716,31 @@ function Keymetrics(opts) {
     });
 
   this._auth = new Authenticate(opts);
-  this._bucket_id = opts.bucket || null;
-  this.bucket = new Bucket(this.getUrl(), this.eventemitter2, opts.id);
+  this.bucket = new Bucket(this.getUrl(), this.eventemitter2, opts.bucket);
   this.realtime = new Realtime(this.getUrl(), this.eventemitter2);
-  if (opts.access_token) {
-    this.bucket.setToken(opts.access_token);
-    this.realtime.token = opts.access_token;
-  }
+  if (opts.access_token)
+    this.eventemitter2.emit('current:token', opts.access_token);
+  if (opts.bucket)
+    self.eventemitter2('current:id', opts.bucket);
 };
 
 Keymetrics.prototype.init = function(public_key, callback) {
   var self = this;
+ 
 
   if (typeof public_key === 'function')
     callback = public_key;
 
   this.checkToken(function(err, token) {
     if (token) {
-      if (!self._bucket_id)
-        self.bucket.getId(token, public_key, function(err, id) {
+      if (!self.bucket._id)
+        self.bucket.getId(public_key, function(err, id) {
           if (err) callback(err);
-          self.setId(id);
+          self.eventemitter2.emit('current:id', id);
           return callback(null, self.bucket.current_raw);
         });
       else {
-        self.setId(self._bucket_id);
-        return callbacK(null, self.bucket.current_raw);
+        return callback(null, self.bucket.current_raw);
       }
     }
     else
@@ -743,34 +749,25 @@ Keymetrics.prototype.init = function(public_key, callback) {
 
   //Check token every minute
 //  setInterval(this.checkToken(), 60000);
-}
+};
 
 Keymetrics.prototype.getUrl = function() {
   return this.api.host + ':' + this.api.port + this.api.basePath;
 };
 
-Keymetrics.prototype.setId = function(id) {
-  this._bucket_id = id;
-  this.realtime.setId(id);
-  this.bucket.setId(id);
-};
-
 Keymetrics.prototype.checkToken = function(cb) {
   var self = this;
 
-  var changeAll = function(token) {
-    self.bucket.setToken(token);
-    self.realtime.token = token;
-    cb(null, token);
-  };
-
   if (!self._auth.access_token)
     self._auth.refreshToken(function(err, token) {
-      if (err) cb(err);
-      changeAll(token);
+      console.log('wefwe');
+      if (err) return cb(err);
+      self.eventemitter2.emit('current:token', token);
+      return cb(null, token)
     });
-  else
-      changeAll(self._auth.access_token);
+  else {
+    return cb (null, self._auth.access_token);
+  }
 };
 
 module.exports = Keymetrics;
