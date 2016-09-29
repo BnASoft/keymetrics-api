@@ -15,4 +15,7 @@ keymetrics.min.js:
 clean:
 	rm dist/*
 
+push:
+	mv ./dist/keymetrics.js ../km-front/app/lib
+
 .PHONY: clean
