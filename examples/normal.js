@@ -1,12 +1,21 @@
 var Keymetrics = require('../lib/keymetrics');
 
 var km = new Keymetrics({
-  refresh_token: "eim9bea23p21l7nfuvyas2vf1yug35vw70kd9o245o3ekgb6a1bp4fm3lxgsxug6",
-  token_type: 'refresh_token'
-}, function (err, data) {
-  console.log(err || data);
+  refresh_token: 'dwiirnbukadhx7i1spbvtxq0r7eodo5d0a53eo37uh7w5rmiuv0bnb16ub16nua3',
+  token_type: 'refresh_token',
+  public_key: 'g3aylnb5xbsmvno',
+  realtime: 'startup'
 });
 
-km.bus.on('error:*', function (err) {
-  console.log(err);
-})
+//Get authenticated
+km.init(function(err, res) {
+  //Get user role
+  km.bucket.fetchUserRole(function(err, res) {
+    console.log('Current permissions: ' + res);
+  });
+
+  //Print recieved data
+  km.bus.on('data:**', function(data) {
+    console.log(data);
+  });
+});
