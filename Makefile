@@ -12,6 +12,11 @@ keymetrics.min.js:
 		--standalone Keymetrics | \
 		./node_modules/.bin/uglifyjs > ./dist/keymetrics.min.js
 
+doc:
+	@./node_modules/.bin/jsdoc \
+		-r \
+		./lib/
+
 clean:
 	rm dist/*
 
