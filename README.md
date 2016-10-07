@@ -19,7 +19,7 @@ var km = new Keymetrics({
 });
 
 km.init(function(err, res) {
-  if (err) return console.err(err);
+  if (err) return console.log(err);
   //Get user role
   km.bucket.fetchUserRole(function(err, res) {
     console.log('Current permissions: ' + res);
