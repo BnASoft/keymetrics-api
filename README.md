@@ -130,4 +130,4 @@ km.realtime.init(null, function(data) {
 });
 ```
 
-Set NODE_ENV to development to allow verbose mode for a NodeJS process.
+`DEBUG=*` allows verbose mode for recieved realtime data.
