@@ -1,6 +1,6 @@
 # Keymetrics API Wrapper
 
-This module allows you implement a fully customizable Keymetrics client, recieving live data from the Keymetrics API.
+This module lets you implement a fully customizable Keymetrics client, receiving live data from the Keymetrics API.
 
 You will need to retrieve your Keymetrics user token to use it.
 
@@ -25,8 +25,8 @@ km.init(function(err, res) {
     console.log('Current permissions: ' + res);
   });
 
-  //Print recieved status
-  km.bus.on('data:*status', function(data) {
+  //Print received status
+  km.bus.on('data:*:status', function(data) {
     console.log(data);
   });
 });
@@ -34,10 +34,12 @@ km.init(function(err, res) {
 
 ### Options
 
-*   `public_key`: when defined, lets you retrieve the correct Bucket.
-*   `realtime`: when defined with public_key, launches the websocket session.
+*   `refresh_token` (Required): Refresh token obtained from the Keymetrics dashboard.
+*   `token_type` (Required): Token type (`refresh_token` or `access_token`)
+*   `public_key` (Optional): When defined, lets you retrieve the correct bucket.
+*   `realtime` (Optional): When defined with public_key, launches the websocket session at start.
 
-This snippet makes 3 successive calls (if all options set):
+This snippet makes 3 successive calls (if all options are set):
 
 *   POST to get and access_token from the servers
 *   GET to retrieve the correct bucket informations
@@ -55,12 +57,13 @@ var km = new Keymetrics({
   token_type: 'refresh_token'
 });
 
-//Retrieve bucket when authenticated
+//When authenticated
 km.bus.on('auth:ready', function(token) {
+  //Retrieve bucket
   km.bucket.connect('[public_key]');
 });
 
-//Start realtime when bucket is retrieved
+//When bucket is retrieved
 km.bus.on('bucket:active', function(id) {
   //Fetch user role
   km.bucket.fetchUserRole(function(err, res) {
@@ -71,8 +74,8 @@ km.bus.on('bucket:active', function(id) {
   km.realtime.init();
 });
 
-//When realtime is started, do actions
-km.bus.on('realtime:on', function(id) {
+//When realtime starts
+km.bus.on('realtime:on', function() {
   console.log('Realtime started!')
 });
 
@@ -98,9 +101,15 @@ km.init();
 *   realtime:reconnect
 *   realtime:reconnect-timeout
 *   realtime:auth
+*   raw:\[server_name\]:status
 *   data:\[server_name\]:status
 *   data:\[server_name\]:server_name
 *   data:\[server_name\]:monitoring
+
+#### User
+
+*   user:logged_in
+*   user:logged_out
 
 #### Error
 
@@ -108,26 +117,4 @@ km.init();
 *   error:realtime
 *   error:bucket
 
-### Realtime
-
-The keymetrics.realtime.init() function makes 1 call:
-*   POST to set the current session as active and start retrieving the data.
-
-```javascript
-km.realtime.init(callback, recurring);
-
-//Just start the connection and broadcast with EventEmitter2
-km.realtime.init();
-
-//Start connection, print bucket after socket is initialized
-km.realtime.init(function(err, bucket) {
-  console.log(bucket);
-});
-
-//Print the data recieved at every iteration
-km.realtime.init(null, function(data) {
-    console.log(data);
-});
-```
-
-`DEBUG=*` allows verbose mode for recieved realtime data.
+`DEBUG=*` allows verbose mode for received realtime data.

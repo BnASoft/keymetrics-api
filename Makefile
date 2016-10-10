@@ -1,6 +1,6 @@
 all: keymetrics.js keymetrics.min.js
 
-keymetrics.js: 
+keymetrics.js:
 	@./node_modules/.bin/browserify \
 		lib/keymetrics.js \
 		--standalone Keymetrics \
@@ -14,8 +14,9 @@ keymetrics.min.js:
 
 doc:
 	@./node_modules/.bin/jsdoc \
-		-r \
-		./lib/
+		-r ./lib/ \
+		--readme ./README.md \
+		-t ./node_modules/minami/
 
 clean:
 	rm dist/*

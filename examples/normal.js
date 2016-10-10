@@ -1,10 +1,11 @@
 var Keymetrics = require('../lib/keymetrics');
 
 var km = new Keymetrics({
-  refresh_token: 'dwiirnbukadhx7i1spbvtxq0r7eodo5d0a53eo37uh7w5rmiuv0bnb16ub16nua3',
+  host: 'https://staging.keymetrics.io',
+  refresh_token: process.env.TEST_TOKEN,
   token_type: 'refresh_token',
-  public_key: 'g3aylnb5xbsmvno',
-  realtime: 'startup'
+  public_key: process.env.TEST_PUB_KEY,
+  realtime: true
 });
 
 //Get authenticated
@@ -14,8 +15,13 @@ km.init(function(err, res) {
     console.log('Current permissions: ' + res);
   });
 
+
+  km.user.refreshUser(function(err, res) {
+    console.log(res);
+  })
   //Print recieved data
   km.bus.on('data:**', function(data) {
-    console.log(data);
+    console.log('-- INC ---');
+    console.log(km.bucket);
   });
 });
