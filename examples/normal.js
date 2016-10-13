@@ -1,7 +1,6 @@
 var Keymetrics = require('../lib/keymetrics');
 
 var km = new Keymetrics({
-  host: 'https://staging.keymetrics.io',
   refresh_token: process.env.TEST_TOKEN,
   token_type: 'refresh_token',
   public_key: process.env.TEST_PUB_KEY,

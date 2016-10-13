@@ -911,27 +911,32 @@ Realtime.prototype.init = function (cb) {
       });
 
       primus.on('open', function () {
-        console.log('[%s] Realtime connected', moment().format());
+        if (self.testVerbose())
+          console.log('[%s] Realtime connected', moment().format());
         self.bus.emit('realtime:on');
       });
 
       primus.on('close', function () {
-        console.log('[%s] Realtime disconnected', moment().format());
+        if (self.testVerbose())
+          console.log('[%s] Realtime disconnected', moment().format());
         self.bus.emit('realtime:off');
       });
 
       primus.on('reconnect', function () {
-        console.log('[%s] Realtime re-connection', moment().format());
+        if (self.testVerbose())
+          console.log('[%s] Realtime re-connection', moment().format());
         self.bus.emit('realtime:reconnect');
       });
 
       primus.on('reconnect timeout', function () {
-        console.log('Websocket reconnect timeout');
+        if (self.testVerbose())
+          console.log('Websocket reconnect timeout');
         self.bus.emit('realtime:reconnect-timeout');
       });
 
       primus.on('connection:success', function (myself) {
-        console.log('Websocket user authenticated');
+        if (self.testVerbose())
+          console.log('Websocket user authenticated');
         self.bus.emit('realtime:auth');
       });
 
@@ -1233,7 +1238,7 @@ var EventEmitter2 = require('eventemitter2');
  * @param {string} opts.token_type      [Required] Type: 'refresh_token' or 'access_token'
  * @param {string} opts.access_token    [Optional] Access token
  * @param {string} opts.public_key      [Optional] Bucket public key
- * @param {string} opts.realtime        [Optional] When true, attempts realtime connection on .init() 
+ * @param {string} opts.realtime        [Optional] When true, attempts realtime connection on .init()
  * @param {string} opts.public_key      [Optional] Bucket id
  * @param {string} opts.host            [Optional] Base url used (default 'http://app.keymetrics.io:3000')
  * @param {string} opts.basePath        [Optional] Base API path (default '/api')
@@ -1248,7 +1253,7 @@ var Keymetrics = function (opts) {
   opts = opts || {};
 
   this.api = {
-    host : opts.host ||  'http://app.km.io:3000',
+    host : opts.host ||  'https://app.keymetrics.io',
     basePath : opts.path || '/api'
   };
   opts.root_url = this.api.host + this.api.basePath;
