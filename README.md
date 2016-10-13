@@ -4,6 +4,8 @@ This module lets you implement a fully customizable Keymetrics client, receiving
 
 You will need to retrieve your Keymetrics user token to use it.
 
+For more informations about the data structures and API calls check out the [documentation](https://rawgit.com/keymetrics/keymetrics-api/master/doc/index.html).
+
 We designed 2 ways to start the module: via callback or events.
 
 ## Basic use - callbacks
