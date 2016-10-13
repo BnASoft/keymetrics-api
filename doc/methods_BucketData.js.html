@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>methods/BucketData.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Keymetrics.html">Keymetrics</a><ul class='methods'><li data-type='method'><a href="Keymetrics.html#init">init</a></li></ul></li><li><a href="Keymetrics.auth.html">auth</a><ul class='methods'><li data-type='method'><a href="Keymetrics.auth.html#init">init</a></li><li data-type='method'><a href="Keymetrics.auth.html#logout">logout</a></li><li data-type='method'><a href="Keymetrics.auth.html#refresh">refresh</a></li></ul></li><li><a href="Keymetrics.bucket.html">bucket</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.html#all">all</a></li><li data-type='method'><a href="Keymetrics.bucket.html#connect">connect</a></li><li data-type='method'><a href="Keymetrics.bucket.html#connectFromID">connectFromID</a></li><li data-type='method'><a href="Keymetrics.bucket.html#fetchUserRole">fetchUserRole</a></li><li data-type='method'><a href="Keymetrics.bucket.html#get">get</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getMetaServers">getMetaServers</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getPlans">getPlans</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getProbesHistory">getProbesHistory</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getProbesMeta">getProbesMeta</a></li><li data-type='method'><a href="Keymetrics.bucket.html#init">init</a></li><li data-type='method'><a href="Keymetrics.bucket.html#retrieve">retrieve</a></li><li data-type='method'><a href="Keymetrics.bucket.html#retrieveFromID">retrieveFromID</a></li><li data-type='method'><a href="Keymetrics.bucket.html#saveMetaServer">saveMetaServer</a></li><li data-type='method'><a href="Keymetrics.bucket.html#update">update</a></li></ul></li><li><a href="Keymetrics.bucket.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.Action.html#deleteScopedAction">deleteScopedAction</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#listScopedActions">listScopedActions</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#trigger">trigger</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#triggerPM2action">triggerPM2action</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#triggerPm2ScopedAction">triggerPm2ScopedAction</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#triggerScopedAction">triggerScopedAction</a></li></ul></li><li><a href="Keymetrics.bucket.Alert.html">Alert</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.Alert.html#removeEvent">removeEvent</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#sendReport">sendReport</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#update">update</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#updateSlack">updateSlack</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#updateWebhook">updateWebhook</a></li></ul></li><li><a href="Keymetrics.bucket.Data.html">Data</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.Data.html#deleteAllExceptions">deleteAllExceptions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#deleteExceptions">deleteExceptions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#deleteServer">deleteServer</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#deploymentsListing">deploymentsListing</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#events">events</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#eventsStats">eventsStats</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#eventsSummary">eventsSummary</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#exceptions">exceptions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#exceptionsSummary">exceptionsSummary</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#flushLogs">flushLogs</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#getTransactionAVG">getTransactionAVG</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#getTransactionHisto">getTransactionHisto</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#httpTransactionsSummary">httpTransactionsSummary</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#logs">logs</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#meta">meta</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#monitoring">monitoring</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#pm2Version">pm2Version</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#processEvents">processEvents</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#resethttpTransactions">resethttpTransactions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#status">status</a></li></ul></li><li><a href="Keymetrics.bucket.User.html">User</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.User.html#addUserToBucket">addUserToBucket</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#authorized">authorized</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#isAdmin">isAdmin</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#removeInvitation">removeInvitation</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#removeSelf">removeSelf</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#removeUser">removeUser</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#upgradeUser">upgradeUser</a></li></ul></li><li><a href="Keymetrics.realtime.html">realtime</a><ul class='methods'><li data-type='method'><a href="Keymetrics.realtime.html#init">init</a></li><li data-type='method'><a href="Keymetrics.realtime.html#unregister">unregister</a></li></ul></li><li><a href="Keymetrics.user.html">user</a><ul class='methods'><li data-type='method'><a href="Keymetrics.user.html#getUser">getUser</a></li><li data-type='method'><a href="Keymetrics.user.html#refreshUser">refreshUser</a></li><li data-type='method'><a href="Keymetrics.user.html#setUser">setUser</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#deepCloneArray">deepCloneArray</a></li><li><a href="global.html#deepExtend">deepExtend</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">methods/BucketData.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+/**
+ * Data
+ * @memberof Keymetrics.bucket
+ * @constructor
+ *
+ * @param {object} opts Options
+ */
+function Data(opts) {
+  var self = this;
+  if (!(this instanceof Data)) {
+    return new Data(opts);
+  }
+
+  this.bus = opts.bus;
+  this.root_url = opts.root_url;
+  this.http = opts.http;
+
+  this.bus.on('bucket:active', function(id) {
+    self._id = id;
+    self.URL = self.root_url + '/bucket/' + id;
+  });
+  this.bus.on('auth:ready', function(data) {
+    // update Authorization header
+    self.http.set('Authorization', 'Bearer ' + data.access_token);
+  })
+
+  /**
+   * Retrieve latest pm2 version
+   *
+   * @param  {function} cb Callback
+   */
+  this.pm2Version = function(cb) {
+    this.http
+    .get(this.root_url + '/misc/pm2_version')
+    .end(function(err, res) {
+      return cb(err, res.body);
+    });
+  }
+
+
+  /**
+   * Retrieves metadata
+   *
+   * @param  {function} cb Callback
+   */
+  this.meta = function(cb) {
+    this.http.get(this.URL + '/data/metadata')
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Retrieves status
+   *
+   * @param  {function} cb Callback
+   */
+  this.status = function(cb) {
+    this.http
+      .get(this.URL + '/data/status')
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Retrieves logged events
+   *
+   * @param  {object} opts Events
+   * @param  {function} cb Callback
+   */
+  this.events = function(opts, cb) {
+    this.http.post(this.URL + '/data/events')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Retrieves logged events statistics
+   *
+   * @param  {function} cb Callback
+   */
+  this.eventsStats = function(opts, cb) {
+    this.http.post(this.URL + '/data/events/stats')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Retrieves events
+   *
+   * @param  {object} opts Application
+   * @param  {function} cb Callback
+   */
+  this.eventsSummary = function(opts, cb) {
+    this.http.get(this.URL + '/data/eventsKeysByApp')
+      .query(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Send events
+   *
+   * @param  {function} cb Callback
+   */
+  this.processEvents = function(opts, cb) {
+    this.http.post(this.URL + '/data/processEvents')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Retrieves monitoring values
+   *
+   * @param  {object} opts Options
+   * @param  {function} cb Callback
+   */
+  this.monitoring = function(opts, cb) {
+    this.http.post(this.URL + '/data/monitoring/app')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+
+  /**
+   * Retrieves exceptions
+   *
+   * @param  {object} opts Exceptions
+   * @param  {function} cb Callback
+   */
+  this.exceptions = function(opts, cb) {
+    this.http.post(this.URL + '/data/exceptions')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Retrieves list of deployments
+   *
+   * @param  {object} opts Exceptions
+   * @param {function} cb Callback
+   */
+  this.deploymentsListing = function(opts, cb) {
+    this.http.get(this.URL + '/data/processEvents/deployments')
+      .query(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Retrieves summary of exceptions
+   *
+   * @param  {object} opts Exceptions
+   * @param  {function} cb Callback
+   */
+  this.exceptionsSummary = function(cb) {
+    this.http
+      .get(this.URL + '/data/exceptions/summary')
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Delete all logged exceptions
+   *
+   * @param  {object} opts Exceptions
+   * @param  {function} cb Callback
+   */
+  this.deleteAllExceptions = function(opts, cb) {
+    this.http.post(this.URL + '/data/exceptions/delete_all')
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Delete selected exceptions
+   *
+   * @param  {object} opts Exceptions
+   * @param  {function} cb Callback
+   */
+  this.deleteExceptions = function(opts, cb) {
+    this.http.post(this.URL + '/data/exceptions/delete')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Delete selected server
+   *
+   * @param  {object} opts Server
+   * @param  {function} cb Callback
+   */
+  this.deleteServer = function(opts, cb) {
+    var self = this;
+
+    this.http.post(this.URL + '/data/deleteServer', opts)
+      .send(opts)
+      .end(function(err, res) {
+        if (err)
+          return cb(err.msg || err);
+        delete self.servers[opts.server_name];
+        return cb(null, res.body);
+      });
+  }
+
+  /**
+   * Retrieve httpTransactionsSummary
+   *
+   * @param  {object} opts Server
+   * @param  {function} cb Callback
+   */
+  this.httpTransactionsSummary = function(opts, cb) {
+    this.http.get(this.URL + '/data/transactions/summary')
+      .query(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Reset httpTransactionsSummary
+   *
+   * @param  {object} opts Server
+   * @param  {function} cb Callback
+   */
+  this.resethttpTransactions = function(opts, cb) {
+    this.http.post(this.URL + '/data/transactions/reset_url')
+      .send(otps)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Retrieve Transactions Average
+   *
+   * @param  {function} cb Callback
+   */
+  this.getTransactionAVG = function(cb) {
+    this.http
+      .get(this.URL + '/data/transactions/average')
+      .end(function(err, res) {
+        return cb(err, res.body)
+      });
+  }
+
+  /**
+   * Retrieve Transactions Histogram
+   *
+   * @param  {object} opts Server
+   * @param  {function} cb Callback
+   */
+  this.getTransactionHisto = function(opts, cb) {
+    this.http.get(this.URL + '/data/transactions/histogram')
+      .query(opts)
+      .end(function(err, res) {
+        return cb(err, res.body)
+      });
+  }
+
+  /**
+   * Retrieve Data Logs
+   *
+   * @param  {object} opts Server
+   * @param  {function} cb Callback
+   */
+  this.logs = function(opts, cb) {
+    this.http.get(this.URL + '/data/logs')
+      .query(opts)
+      .end(function(err, res) {
+        return cb(err, res.body)
+      });
+  }
+
+  /**
+   * Flush Data Logs
+   *
+   * @param  {object} opts Server
+   * @param  {function} cb Callback
+   */
+  this.flushLogs = function(opts, cb) {
+    this.http.delete(this.URL + '/data/logs')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body)
+      });
+  }
+}
+
+module.exports = Data;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Thu Oct 13 2016 16:55:56 GMT+0200 (CEST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

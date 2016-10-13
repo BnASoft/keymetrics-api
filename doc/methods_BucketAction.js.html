@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>methods/BucketAction.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Keymetrics.html">Keymetrics</a><ul class='methods'><li data-type='method'><a href="Keymetrics.html#init">init</a></li></ul></li><li><a href="Keymetrics.auth.html">auth</a><ul class='methods'><li data-type='method'><a href="Keymetrics.auth.html#init">init</a></li><li data-type='method'><a href="Keymetrics.auth.html#logout">logout</a></li><li data-type='method'><a href="Keymetrics.auth.html#refresh">refresh</a></li></ul></li><li><a href="Keymetrics.bucket.html">bucket</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.html#all">all</a></li><li data-type='method'><a href="Keymetrics.bucket.html#connect">connect</a></li><li data-type='method'><a href="Keymetrics.bucket.html#connectFromID">connectFromID</a></li><li data-type='method'><a href="Keymetrics.bucket.html#fetchUserRole">fetchUserRole</a></li><li data-type='method'><a href="Keymetrics.bucket.html#get">get</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getMetaServers">getMetaServers</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getPlans">getPlans</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getProbesHistory">getProbesHistory</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getProbesMeta">getProbesMeta</a></li><li data-type='method'><a href="Keymetrics.bucket.html#init">init</a></li><li data-type='method'><a href="Keymetrics.bucket.html#retrieve">retrieve</a></li><li data-type='method'><a href="Keymetrics.bucket.html#retrieveFromID">retrieveFromID</a></li><li data-type='method'><a href="Keymetrics.bucket.html#saveMetaServer">saveMetaServer</a></li><li data-type='method'><a href="Keymetrics.bucket.html#update">update</a></li></ul></li><li><a href="Keymetrics.bucket.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.Action.html#deleteScopedAction">deleteScopedAction</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#listScopedActions">listScopedActions</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#trigger">trigger</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#triggerPM2action">triggerPM2action</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#triggerPm2ScopedAction">triggerPm2ScopedAction</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#triggerScopedAction">triggerScopedAction</a></li></ul></li><li><a href="Keymetrics.bucket.Alert.html">Alert</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.Alert.html#removeEvent">removeEvent</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#sendReport">sendReport</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#update">update</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#updateSlack">updateSlack</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#updateWebhook">updateWebhook</a></li></ul></li><li><a href="Keymetrics.bucket.Data.html">Data</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.Data.html#deleteAllExceptions">deleteAllExceptions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#deleteExceptions">deleteExceptions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#deleteServer">deleteServer</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#deploymentsListing">deploymentsListing</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#events">events</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#eventsStats">eventsStats</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#eventsSummary">eventsSummary</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#exceptions">exceptions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#exceptionsSummary">exceptionsSummary</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#flushLogs">flushLogs</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#getTransactionAVG">getTransactionAVG</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#getTransactionHisto">getTransactionHisto</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#httpTransactionsSummary">httpTransactionsSummary</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#logs">logs</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#meta">meta</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#monitoring">monitoring</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#pm2Version">pm2Version</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#processEvents">processEvents</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#resethttpTransactions">resethttpTransactions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#status">status</a></li></ul></li><li><a href="Keymetrics.bucket.User.html">User</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.User.html#addUserToBucket">addUserToBucket</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#authorized">authorized</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#isAdmin">isAdmin</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#removeInvitation">removeInvitation</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#removeSelf">removeSelf</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#removeUser">removeUser</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#upgradeUser">upgradeUser</a></li></ul></li><li><a href="Keymetrics.realtime.html">realtime</a><ul class='methods'><li data-type='method'><a href="Keymetrics.realtime.html#init">init</a></li><li data-type='method'><a href="Keymetrics.realtime.html#unregister">unregister</a></li></ul></li><li><a href="Keymetrics.user.html">user</a><ul class='methods'><li data-type='method'><a href="Keymetrics.user.html#getUser">getUser</a></li><li data-type='method'><a href="Keymetrics.user.html#refreshUser">refreshUser</a></li><li data-type='method'><a href="Keymetrics.user.html#setUser">setUser</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#deepCloneArray">deepCloneArray</a></li><li><a href="global.html#deepExtend">deepExtend</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">methods/BucketAction.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+/**
+ * Action
+ * @memberof Keymetrics.bucket
+ * @constructor
+ *
+ * @param {object} opts Options
+ */
+function Action(opts) {
+  var self = this;
+  if (!(this instanceof Action)) {
+    return new Action(http);
+  }
+
+  this.bus = opts.bus;
+  this.root_url = opts.root_url;
+  this.http = opts.http;
+
+  this.bus.on('bucket:active', function(id) {
+    self._id = id;
+    self.URL = self.root_url + '/bucket/' + id;
+  });
+  this.bus.on('auth:ready', function(data) {
+    // update Authorization header
+    self.http.set('Authorization', 'Bearer ' + data.access_token);
+  })
+
+  /**
+   * Trigger action
+   *
+   * @param  {object} opts              Options
+   * @param  {object} opts.server_name  Server Name
+   * @param  {object} opts.process_id   Process id
+   * @param  {object} opts.action_name  Action name
+   * @param  {function} cb              callback
+   */
+  this.trigger = function(opts, cb) {
+    if (typeof(opts.server_name) === 'undefined' ||
+        typeof(opts.process_id) === 'undefined' ||
+        typeof(opts.action_name) === 'undefined' )
+      return console.error('Missing parameters in trigger');
+
+    this.http.post(this.URL + '/actions/trigger')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+    return false;
+  }
+
+  /**
+   * Trigger pm2 action
+   *
+   * @param  {type} opts              options
+   * @param  {type} opts.server_name  Server name
+   * @param  {type} opts.method_name  Method name
+   * @param  {type} cb                callback
+   */
+  this.triggerPM2action = function(opts, cb) {
+    if (!opts.server_name || !opts.method_name)
+      return $log.error('Missing parameters in triggerPM2');
+
+    this.http.post(this.URL + '/actions/triggerPM2')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+    return false;
+  }
+
+  /**
+   * Trigger scoped action
+   *
+   * @param  {object} opts              Options
+   * @param  {object} opts.server_name  Server Name
+   * @param  {object} opts.action_name  Action name
+   * @param  {object} opts.app_name  App name
+   * @param  {object} opts.pm_id        Process id
+   * @param  {function} cb              callback
+   */
+  this.triggerScopedAction = function(opts, cb) {
+    if (typeof opts.server_name     == 'undefined'
+        || typeof !opts.action_name == 'undefined'
+        || typeof !opts.app_name    == 'undefined'
+        || typeof !opts.pm_id       == 'undefined')
+      return $log.error('Missing parameters in triggerScopedAction');
+
+    this.http.post(this.URL + '/actions/triggerScopedAction')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Trigger pm2 scoped action
+   *
+   * @param  {type} opts              options
+   * @param  {type} cb                callback
+   */
+  this.triggerPm2ScopedAction = function(opts, cb) {
+    this.http.post(this.URL + '/actions/triggerPM2ScopedAction')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * List scoped actions
+   *
+   * @param  {type} opts              options
+   * @param  {type} cb                callback
+   */
+  this.listScopedActions = function(opts, cb) {
+    this.http.post(this.URL + '/actions/listScopedActions')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  /**
+   * Delete scoped actions
+   *
+   * @param  {type} opts              options
+   * @param  {type} cb                callback
+   */
+  this.deleteScopedAction = function(opts, cb) {
+    this.http.post(this.URL + '/actions/deleteScopedAction')
+      .send(opts)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+  }
+
+  this.getJSON = function(opts, cb) {
+    if (typeof !opts.file == 'undefined')
+      return console.error('Missing parameters in getJSON');
+
+    this.http.get(opts.file)
+      .end(function(err, res) {
+        return cb(err, res.body);
+      });
+    return false;
+  }
+};
+
+module.exports = Action;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Thu Oct 13 2016 16:55:56 GMT+0200 (CEST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Realtime.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Keymetrics.html">Keymetrics</a><ul class='methods'><li data-type='method'><a href="Keymetrics.html#init">init</a></li></ul></li><li><a href="Keymetrics.auth.html">auth</a><ul class='methods'><li data-type='method'><a href="Keymetrics.auth.html#init">init</a></li><li data-type='method'><a href="Keymetrics.auth.html#logout">logout</a></li><li data-type='method'><a href="Keymetrics.auth.html#refresh">refresh</a></li></ul></li><li><a href="Keymetrics.bucket.html">bucket</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.html#all">all</a></li><li data-type='method'><a href="Keymetrics.bucket.html#connect">connect</a></li><li data-type='method'><a href="Keymetrics.bucket.html#connectFromID">connectFromID</a></li><li data-type='method'><a href="Keymetrics.bucket.html#fetchUserRole">fetchUserRole</a></li><li data-type='method'><a href="Keymetrics.bucket.html#get">get</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getMetaServers">getMetaServers</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getPlans">getPlans</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getProbesHistory">getProbesHistory</a></li><li data-type='method'><a href="Keymetrics.bucket.html#getProbesMeta">getProbesMeta</a></li><li data-type='method'><a href="Keymetrics.bucket.html#init">init</a></li><li data-type='method'><a href="Keymetrics.bucket.html#retrieve">retrieve</a></li><li data-type='method'><a href="Keymetrics.bucket.html#retrieveFromID">retrieveFromID</a></li><li data-type='method'><a href="Keymetrics.bucket.html#saveMetaServer">saveMetaServer</a></li><li data-type='method'><a href="Keymetrics.bucket.html#update">update</a></li></ul></li><li><a href="Keymetrics.bucket.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.Action.html#deleteScopedAction">deleteScopedAction</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#listScopedActions">listScopedActions</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#trigger">trigger</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#triggerPM2action">triggerPM2action</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#triggerPm2ScopedAction">triggerPm2ScopedAction</a></li><li data-type='method'><a href="Keymetrics.bucket.Action.html#triggerScopedAction">triggerScopedAction</a></li></ul></li><li><a href="Keymetrics.bucket.Alert.html">Alert</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.Alert.html#removeEvent">removeEvent</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#sendReport">sendReport</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#update">update</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#updateSlack">updateSlack</a></li><li data-type='method'><a href="Keymetrics.bucket.Alert.html#updateWebhook">updateWebhook</a></li></ul></li><li><a href="Keymetrics.bucket.Data.html">Data</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.Data.html#deleteAllExceptions">deleteAllExceptions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#deleteExceptions">deleteExceptions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#deleteServer">deleteServer</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#deploymentsListing">deploymentsListing</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#events">events</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#eventsStats">eventsStats</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#eventsSummary">eventsSummary</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#exceptions">exceptions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#exceptionsSummary">exceptionsSummary</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#flushLogs">flushLogs</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#getTransactionAVG">getTransactionAVG</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#getTransactionHisto">getTransactionHisto</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#httpTransactionsSummary">httpTransactionsSummary</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#logs">logs</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#meta">meta</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#monitoring">monitoring</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#pm2Version">pm2Version</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#processEvents">processEvents</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#resethttpTransactions">resethttpTransactions</a></li><li data-type='method'><a href="Keymetrics.bucket.Data.html#status">status</a></li></ul></li><li><a href="Keymetrics.bucket.User.html">User</a><ul class='methods'><li data-type='method'><a href="Keymetrics.bucket.User.html#addUserToBucket">addUserToBucket</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#authorized">authorized</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#isAdmin">isAdmin</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#removeInvitation">removeInvitation</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#removeSelf">removeSelf</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#removeUser">removeUser</a></li><li data-type='method'><a href="Keymetrics.bucket.User.html#upgradeUser">upgradeUser</a></li></ul></li><li><a href="Keymetrics.realtime.html">realtime</a><ul class='methods'><li data-type='method'><a href="Keymetrics.realtime.html#init">init</a></li><li data-type='method'><a href="Keymetrics.realtime.html#unregister">unregister</a></li></ul></li><li><a href="Keymetrics.user.html">user</a><ul class='methods'><li data-type='method'><a href="Keymetrics.user.html#getUser">getUser</a></li><li data-type='method'><a href="Keymetrics.user.html#refreshUser">refreshUser</a></li><li data-type='method'><a href="Keymetrics.user.html#setUser">setUser</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#deepCloneArray">deepCloneArray</a></li><li><a href="global.html#deepExtend">deepExtend</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Realtime.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+var Http = require('./utils/http.js');
+var Primus = require('./services/primus.js');
+var moment = require('moment');
+
+/**
+ * Realtime
+ * @memberof Keymetrics
+ * @constructor
+ * @alias realtime
+ *
+ * @param {object} opts Options
+ */
+
+function Realtime(opts) {
+  var self = this;
+  if (!(this instanceof Realtime)) {
+    return new Realtime(opts);
+  }
+
+  this.bus = opts.bus;
+  this.root_url = opts.root_url;
+  this.http = new Http();
+
+  this.bus.on('bucket:active', function (id) {
+    self.bucket_id = id;
+  });
+
+  this.bus.on('auth:ready', function (data) {
+    // update Authorization header
+    self.http.set('Authorization', 'Bearer ' + data.access_token);
+    self.token = data.access_token;
+  })
+};
+
+Realtime.prototype.testVerbose = function () {
+  if (typeof window != 'undefined' &amp;&amp; window.VERBOSE)
+    return true;
+  else if (process.env.DEBUG === '*')
+    return true;
+  else
+    return false;
+};
+
+
+/**
+ * Register bucket and start websocket
+ *
+ * @param {function} cb callback
+ */
+Realtime.prototype.init = function (cb) {
+  var self = this;
+
+  this.http
+    .post(this.root_url + '/bucket/' + this.bucket_id + '/setActive')
+    .end(function (err, res) {
+      if (err) {
+        if (cb)
+          return cb(err);
+        else
+          return self.bus.emit('error:realtime', { msg: 'Cant subscribe to a bucket', err: err})
+      }
+      var bucket = res.body;
+
+      var web_url = bucket.node_cache.endpoints.web;
+      var ws_url = bucket.node_cache.endpoints.web;
+
+      /***********************************
+       * Development url overidde
+       * test if on client or NodeJs
+       ***********************************/
+
+      if (typeof window != 'undefined') {
+        if (window.location.host.indexOf('km.io') > -1) {
+          web_url = web_url.replace('9001', '3000');
+          ws_url = ws_url.replace('9001', '4020');
+        }
+        window.API_URL = web_url;
+      }
+      else if (process.env.NODE_ENV == "development") {
+        web_url = web_url.replace('9001', '3000');
+        ws_url = ws_url.replace('9001', '4020');
+      }
+
+      if (self.primus)
+        self.primus.destroy();
+
+      var primus = self.primus = Primus.connect(ws_url || '/', {
+        strategy: ['online', 'timeout', 'disconnect'],
+        reconnect: {
+          max: Infinity // Number: The max delay before we try to reconnect.
+          , min: 100 // Number: The minimum delay before we try reconnect.
+          , retries: 20 // Number: How many times we shoult try to reconnect.
+        }
+      });
+
+      // used to authenticate
+      primus.on('outgoing::url', function (url) {
+        url.query = 'token=' + self.token;
+      });
+
+      primus.on('open', function () {
+        if (self.testVerbose())
+          console.log('[%s] Realtime connected', moment().format());
+        self.bus.emit('realtime:on');
+      });
+
+      primus.on('close', function () {
+        if (self.testVerbose())
+          console.log('[%s] Realtime disconnected', moment().format());
+        self.bus.emit('realtime:off');
+      });
+
+      primus.on('reconnect', function () {
+        if (self.testVerbose())
+          console.log('[%s] Realtime re-connection', moment().format());
+        self.bus.emit('realtime:reconnect');
+      });
+
+      primus.on('reconnect timeout', function () {
+        if (self.testVerbose())
+          console.log('Websocket reconnect timeout');
+        self.bus.emit('realtime:reconnect-timeout');
+      });
+
+      primus.on('connection:success', function (myself) {
+        if (self.testVerbose())
+          console.log('Websocket user authenticated');
+        self.bus.emit('realtime:auth');
+      });
+
+      primus.on('error', function (err) {
+        self.bus.emit('error:realtime', err);
+      })
+
+      primus.on('data:incoming', function (data) {
+        Object.keys(data).forEach(function (event_key) {
+
+          if (self.testVerbose())
+            console.log('data:' + data.server_name + ':' + event_key, data[event_key]);
+
+          if (event_key === 'status')
+            self.bus.emit('raw:' + data.server_name + ':' + event_key, data[event_key]);
+          else
+            self.bus.emit('data:' + data.server_name + ':' + event_key, data[event_key]);
+        });
+      });
+
+      primus.on('heapdump:ready', function (data) {
+        var event_name = 'data:' + data.server_name + ':' + data.app_name + ':' + data.pm_id + ':' + 'heapdump:ready';
+        if (self.testVerbose()) console.log(event_name, data);
+        self.bus.emit(event_name, data);
+      });
+
+      primus.on('cpuprofile:ready', function (data) {
+        var event_name = 'data:' + data.server_name + ':' + data.app_name + ':' + data.pm_id + ':' + 'cpuprofile:ready';
+        if (self.testVerbose()) console.log(event_name, data);
+        self.bus.emit(event_name, data);
+      });
+
+      if (typeof cb != 'undefined' &amp;&amp; cb != null)
+        return cb(null, bucket);
+    });
+};
+
+Realtime.prototype.close = function () {
+  if (this.primus)
+    this.primus.destroy();
+};
+
+/**
+ * Unregister from bucket and destroy websocket connection
+ * @param {function} cb callback
+ */
+Realtime.prototype.unregister = function (cb) {
+  var self = this;
+
+  this.http
+    .post(this.root_url + '/bucket/' + this.bucket_id + '/setUnactive')
+    .end(function (err, res) {
+      if (err) return cb(err);
+      self.close();
+      return cb(null, res.body)
+    });
+};
+
+module.exports = Realtime;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Thu Oct 13 2016 16:55:56 GMT+0200 (CEST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

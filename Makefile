@@ -16,6 +16,7 @@ doc:
 	@./node_modules/.bin/jsdoc \
 		-r ./lib/ \
 		--readme ./README.md \
+		-d doc \
 		-t ./node_modules/minami/
 
 clean:
