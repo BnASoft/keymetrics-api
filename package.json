@@ -1,6 +1,6 @@
 {
   "name": "keymetrics-api",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Keymetrics API Wrapper",
   "main": "lib/keymetrics.js",
   "scripts": {
