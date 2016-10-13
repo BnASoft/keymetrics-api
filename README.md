@@ -1,5 +1,9 @@
 # Keymetrics API Wrapper
 
+<a href="https://travis-ci.org/keymetrics/keymetrics-api">
+  <img src="https://travis-ci.org/keymetrics/keymetrics-api.svg?branch=master" alt="Build Status"/>
+</a>
+
 This module lets you implement a fully customizable Keymetrics client, receiving live data from the Keymetrics API.
 
 You will need to retrieve your Keymetrics user token to use it.
