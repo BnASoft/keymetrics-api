@@ -8,6 +8,20 @@ For more informations about the data structures and API calls check out the [doc
 
 We designed 2 ways to start the module: via callback or events.
 
+## Install
+
+With NPM:
+
+```bash
+$ npm install keymetrics-api --save
+```
+
+With YARN:
+
+```bash
+$ yarn add keymetrics-api
+```
+
 ## Basic use - callbacks
 
 ```javascript
