@@ -11,7 +11,7 @@ We designed 2 ways to start the module: via callback or events.
 ## Basic use - callbacks
 
 ```javascript
-var Keymetrics = require('../lib/keymetrics');
+var Keymetrics = require('keymetrics-api');
 
 var km = new Keymetrics({
   refresh_token: '[token]',
