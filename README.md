@@ -22,7 +22,7 @@ With YARN:
 $ yarn add keymetrics-api
 ```
 
-## Basic use - callbacks
+## Usage example
 
 ```javascript
 var Keymetrics = require('keymetrics-api');
