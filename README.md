@@ -134,3 +134,7 @@ km.init();
 *   error:bucket
 
 `DEBUG=*` allows verbose mode for received realtime data.
+
+## License
+
+Apache 2.0
