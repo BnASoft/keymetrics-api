@@ -3,12 +3,20 @@
 var should     = require('should');
 var Keymetrics = require('../lib/keymetrics');
 
-var keymetrics = new Keymetrics({
-  token : 'uowlliax2q40soi2poduwq982y3vyglchrpd8iyih586v6nkhx92y5glqyh6cfkv',
-  public_key    : '80ml91k1h9nxgn5'
-});
 
 describe('Keymetrics module', function() {
+  var keymetrics;
+
+  describe('Keymetrics object', function() {
+    it('should instanciate Keymetrics obj', function() {
+      keymetrics = new Keymetrics({
+        token      : 'uowlliax2q40soi2poduwq982y3vyglchrpd8iyih586v6nkhx92y5glqyh6cfkv',
+        public_key : '80ml91k1h9nxgn5'
+      });
+    });
+  });
+
+
   describe('Get access_token', function() {
     it('Should get access_token and bucket with refresh_token', function(done) {
       keymetrics.bus.once('bucket:active', function(id) {

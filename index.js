@@ -1,1 +1,1 @@
-require('./lib/keymetrics.js');
+module.exports = require('./lib/keymetrics.js');
