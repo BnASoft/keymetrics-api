@@ -47,7 +47,7 @@ Authenticate.prototype.refresh = function (token, cb) {
 
   if (typeof (token) === 'function') {
     cb = token;
-    token = this.refresh_token || '';
+    token = this.token || '';
   }
 
   var post = this.http
@@ -78,10 +78,10 @@ Authenticate.prototype.init = function (opts, cb) {
   if (cb == null) cb = function(){};
 
   // if the user did input a refresh token
-  if (opts.token_type === 'refresh_token')
-    this.refresh(opts.refresh_token, function (err, data) {
+  if (opts.token)
+    this.refresh(opts.token, function (err, data) {
       if (err) {
-        self.bus.emit('error:auth', { msg: 'Refeshing token failed, maybe invalid/revoked refresh_token ?', err: err });
+        self.bus.emit('error:auth', { msg: 'Refeshing token failed, maybe invalid/revoked token ?', err: err });
         return cb(err);
       }
 
@@ -90,8 +90,8 @@ Authenticate.prototype.init = function (opts, cb) {
       return cb(null, data);
     })
   // if the user did input an access_token
-  else if (opts.token_type === 'access_token') {
-    var data = { access_token: opts.access_token, refresh_token: '', token_type: opts.token_type }
+  else if (opts.access_token) {
+    var data = { access_token: opts.access_token, token: '', token_type: 'access_token' }
     self.bus.emit('auth:ready', data);
     return cb(null, data)
   }
@@ -115,13 +115,13 @@ Authenticate.prototype.logout = function (cb) {
 
   http
     .post(this.root_url + '/oauth/revoke')
-    .send('access_token=' + this.access_token + '&refresh_token=' + this.refresh_token + '&client_id=' + this.client_id)
+    .send('access_token=' + this.access_token + '&token=' + this.token + '&client_id=' + this.client_id)
     .set("Content-Type", "application/x-www-form-urlencoded")
     .end(function (err, res) {
       if (err) return cb(err);
 
       self.bus.emit("user:logged_out");
-      self.refresh_token = null;
+      self.token = null;
       self.access_token = null;
       self.type = null;
       self.expire_at = null;
@@ -180,11 +180,6 @@ var Bucket = function (opts) {
 
   this.worker = new Worker(opts);
 
-  this.bus.on('bucket:active', function (id) {
-    self._id = id;
-    self.URL = self.root_url + '/bucket/' + id;
-  });
-
   this.bus.on('auth:ready', function (data) {
     // update Authorization header
     self.http.set('Authorization', 'Bearer ' + data.access_token);
@@ -235,7 +230,7 @@ Bucket.prototype = {
           if (res.body[i].public_id === public_id) {
             self.current_raw = res.body[i];
             self._id = self.current_raw._id;
-            self.URL = self.root_url + '/bucket/' + self.current_raw._id;
+            self.URL = self.current_raw.node_cache.endpoints.web + '/api/bucket/' + self.current_raw._id;
             return cb(null, self.current_raw);
           }
         };
@@ -254,7 +249,8 @@ Bucket.prototype = {
 
     this.retrieve(public_id, function (err, bucket) {
       if (err) return self.bus.emit('error:bucket', err);
-      self.bus.emit("bucket:active", self.current_raw._id);
+      // console.log(self.current_raw);
+      self.bus.emit("bucket:active", { id: self.current_raw._id, endpoint: self.current_raw.node_cache.endpoints.web });
     });
   },
 
@@ -274,7 +270,7 @@ Bucket.prototype = {
           return cb(err);
         self.current_raw = res.body;
         self._id = self.current_raw._id;
-        self.URL = self.root_url + '/bucket/' + self.current_raw._id;
+        self.URL = self.current_raw.node_cache.endpoints.web + '/api/bucket/' + self.current_raw._id;
         return cb(null, res.body);
       });
   },
@@ -289,7 +285,7 @@ Bucket.prototype = {
     this.retrieveFromID(raw_id, function (err, bucket) {
       if (err) return self.bus.emit('error:bucket', err);
 
-      self.bus.emit("bucket:active", bucket._id);
+      self.bus.emit("bucket:active", self.current_raw._id);
     });
   },
 
@@ -1276,7 +1272,6 @@ var Keymetrics = function (opts) {
   this.options = opts;
 };
 
-
 /**
  * Start the Keymetrics connection
  *
@@ -1284,16 +1279,20 @@ var Keymetrics = function (opts) {
  *
  */
 
-Keymetrics.prototype.init = function (cb) {
+Keymetrics.prototype.init = function (public_key, cb) {
   var self = this;
-  var cb = cb || function(){};
+
+  if (typeof (public_key) === 'function') {
+    cb = public_key;
+    public_key = this.options.public_key || '';
+  }
 
   this.auth.init(this.options, function(err, res) {
     if (err) return cb(err);
 
     //If public key already setup
-    if (self.options.public_key) {
-      self.bucket.retrieve(self.options.public_key, function(err, res) {
+    if (public_key) {
+      self.bucket.retrieve(public_key, function(err, res) {
         if (err) return cb(err);
 
         self.bus.emit("bucket:active", res._id);
