@@ -4,20 +4,19 @@ var should     = require('should');
 var Keymetrics = require('../lib/keymetrics');
 
 var keymetrics = new Keymetrics({
-  refresh_token : 'uowlliax2q40soi2poduwq982y3vyglchrpd8iyih586v6nkhx92y5glqyh6cfkv',
-  token_type    : 'refresh_token',
+  token : 'uowlliax2q40soi2poduwq982y3vyglchrpd8iyih586v6nkhx92y5glqyh6cfkv',
   public_key    : '80ml91k1h9nxgn5'
 });
 
 describe('Keymetrics module', function() {
   describe('Get access_token', function() {
-    it('Should get access_token with refresh_token', function(done) {
-      keymetrics.bus.once('auth:ready', function(token) {
-        keymetrics.auth.access_token.should.be.equal(token.access_token);
+    it('Should get access_token and bucket with refresh_token', function(done) {
+      keymetrics.bus.once('bucket:active', function(id) {
+        keymetrics.bucket.current_raw.public_id.should.be.equal('80ml91k1h9nxgn5');
         done();
       });
 
-      keymetrics.init(keymetrics.options,  function(err, token) {
+      keymetrics.init(function(err, token) {
         should.not.exist(err);
       });
     });
@@ -31,17 +30,7 @@ describe('Keymetrics module', function() {
     });
   });
 
-  describe.skip('test', function() {
-    it('Should retrieve bucket', function(done) {
-      keymetrics.bus.once('bucket:active', function(id) {
-        should.exist(id);
-        id.should.be.equal(keymetrics.realtime.bucket_id);
-        done();
-      });
-
-      keymetrics.bucket.connect(process.env.TEST_PUB_KEY);
-    });
-
+  describe('test', function() {
     it('Should start realtime connection', function(done) {
       keymetrics.bus.once('realtime:auth', function() {
         done();
