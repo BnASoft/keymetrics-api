@@ -43,9 +43,9 @@ describe('Keymetrics module', function() {
       keymetrics.bus.once('realtime:auth', function() {
         done();
       })
-      keymetrics.realtime.init(function (err, bucket) {
-        should.not.exist(err);
-        bucket._id.should.be.equal(keymetrics.realtime.bucket_id);
+      keymetrics.realtime.init({
+        endpoint: keymetrics.bucket.current_raw.node_cache.endpoints.web,
+        public_id: keymetrics.bucket.public_id
       });
     });
 
