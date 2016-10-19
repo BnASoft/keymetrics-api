@@ -4,7 +4,7 @@
   "description": "Keymetrics API Wrapper",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/keymetrics.mocha.js"
+    "test": "mocha test/"
   },
   "repository": {
     "type": "git",

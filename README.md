@@ -32,8 +32,7 @@ $ yarn add keymetrics-api
 var Keymetrics = require('keymetrics-api');
 
 var km = new Keymetrics({
-  refresh_token: '[token]',
-  token_type: 'refresh_token',
+  token: '[token]',
   public_key: '[public_key]',
   realtime: true
 });
