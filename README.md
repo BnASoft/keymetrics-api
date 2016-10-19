@@ -20,12 +20,6 @@ With NPM:
 $ npm install keymetrics-api --save
 ```
 
-With YARN:
-
-```bash
-$ yarn add keymetrics-api
-```
-
 ## Usage example
 
 ```javascript
@@ -53,8 +47,8 @@ km.init(function(err, res) {
 
 ### Options
 
-*   `refresh_token` (Required): Refresh token obtained from the Keymetrics dashboard.
-*   `token_type` (Required): Token type (`refresh_token` or `access_token`)
+*   `token` (Required): Refresh token obtained from the Keymetrics dashboard.
+*   `token_type` (Optional): Token type (`refresh_token` or `access_token`)
 *   `public_key` (Optional): When defined, lets you retrieve the correct bucket.
 *   `realtime` (Optional): When defined with public_key, launches the websocket session at start.
 
@@ -72,8 +66,7 @@ In this example we start the authentication, then retrieve the bucket and finall
 
 ```javascript
 var km = new Keymetrics({
-  refresh_token: '[token]',
-  token_type: 'refresh_token'
+  token: '[token]'
 });
 
 //When authenticated

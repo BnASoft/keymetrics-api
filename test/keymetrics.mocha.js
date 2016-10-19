@@ -84,28 +84,25 @@ describe('Keymetrics module', function() {
   describe('Realtime', function() {
     this.timeout(5000);
 
-    var km_2;
-
     after(function() {
-      km_2.close();
+      keymetrics.close();
     });
 
     before(function(done) {
-      km_2 = new Keymetrics({
+      keymetrics = new Keymetrics({
         token      : 'uowlliax2q40soi2poduwq982y3vyglchrpd8iyih586v6nkhx92y5glqyh6cfkv',
         public_key : '80ml91k1h9nxgn5',
         realtime   : true
       });
 
-      km_2.init(done);
+      keymetrics.init(done);
     });
 
     it('should receive status', function(done) {
-      km_2.bus.once('data:*:status', function(ev, data) {
+      keymetrics.bus.once('data:*:status', function(ev, data) {
         done();
       });
     });
-
   });
 
 });
