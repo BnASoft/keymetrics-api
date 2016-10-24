@@ -79,6 +79,15 @@ describe('Keymetrics module', function() {
         done();
       });
     });
+
+    it('Should retrieve new token when expiration date comes', function(done) {
+      this.timeout(5000);
+      keymetrics.auth.expire_at = Date.now();
+      keymetrics.auth.checkExpiration();
+      keymetrics.bus.once('auth:ready', function(token) {
+        done();
+      });
+    });
   });
 
   describe('Realtime', function() {
